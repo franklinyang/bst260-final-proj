@@ -19,12 +19,20 @@ Install packages
 
 Load data into sqlite
 ```{r}
+rm(list=ls())
 library(DBI)
 # for testing
 # con <- dbConnect(RSQLite::SQLite(), ":memory:")
 
 con <- dbConnect(RSQLite::SQLite(), "../database/db.sqlite")
-hospital_info <- read.csv(file="../data/hospital_general_information.csv", header=TRUE, sep=",")
+
+### Load Hospital Info
+  #Pull Data
+hospital_info <- read.csv(file="../data/hospital_general_information.csv", header=TRUE, sep=",", 
+                          colClasses = rep("character", 29))
+  #replace .'s with _s
+names(hospital_info) <- gsub("\\.", "_", names(hospital_info))
+
 
 # spending tables
 spending_by_claim <- read.csv(file="../data/claims/medicare_hospital_spending_by_claim.csv", header=TRUE, sep=",")
@@ -76,16 +84,24 @@ outcomes_complications_and_deaths <- read.csv(
 )
 
 # load tables
-dbWriteTable(con, "hospital_info", hospital_info)
-dbWriteTable(con, "spending_by_claim", spending_by_claim)
-dbWriteTable(con, "spending_by_beneficary", spending_by_beneficiary)
-dbWriteTable(con, "outcomes_performance_scores", outcomes_performance_scores)
-dbWriteTable(con, "outcomes_efficiency_scores", outcomes_efficiency_scores)
-dbWriteTable(con, "outcomes_readmissions_reductions", outcomes_readmissions_reductions)
-dbWriteTable(con, "outcomes_clinical_care_domain_scores", outcomes_clinical_care_domain_scores)
-dbWriteTable(con, "outcomes_hac_reductions", outcomes_hac_reductions)
-dbWriteTable(con, "outcomes_acs_measures", outcomes_acs_measures)
-dbWriteTable(con, "outcomes_pt_experience_scores", outcomes_pt_experience_scores)
-dbWriteTable(con, "outcomes_safety_scores", outcomes_safety_scores)
-dbWriteTable(con, "outcomes_complications_and_deaths", outcomes_complications_and_deaths)
+dbRemoveTable(con, "hospital_info", hospital_info); dbWriteTable(con, "hospital_info", hospital_info)
+dbRemoveTable(con, "spending_by_claim", spending_by_claim); dbWriteTable(con, "spending_by_claim", spending_by_claim)
+dbRemoveTable(con, "spending_by_beneficiary", spending_by_beneficiary); dbWriteTable(con, "spending_by_beneficiary", spending_by_beneficiary)
+dbRemoveTable(con, "outcomes_performance_scores", outcomes_performance_scores); dbWriteTable(con, "outcomes_performance_scores", outcomes_performance_scores)
+dbRemoveTable(con, "outcomes_efficiency_scores", outcomes_efficiency_scores); dbWriteTable(con, "outcomes_efficiency_scores", outcomes_efficiency_scores)
+dbRemoveTable(con, "outcomes_readmissions_reductions", outcomes_readmissions_reductions); dbWriteTable(con, "outcomes_readmissions_reductions", outcomes_readmissions_reductions)
+dbRemoveTable(con, "outcomes_clinical_care_domain_scores", outcomes_clinical_care_domain_scores); dbWriteTable(con, "outcomes_clinical_care_domain_scores", outcomes_clinical_care_domain_scores)
+dbRemoveTable(con, "outcomes_hac_reductions", outcomes_hac_reductions); dbWriteTable(con, "outcomes_hac_reductions", outcomes_hac_reductions)
+dbRemoveTable(con, "outcomes_acs_measures", outcomes_acs_measures); dbWriteTable(con, "outcomes_acs_measures", outcomes_acs_measures)
+dbRemoveTable(con, "outcomes_pt_experience_scores", outcomes_pt_experience_scores); dbWriteTable(con, "outcomes_pt_experience_scores", outcomes_pt_experience_scores)
+dbRemoveTable(con, "outcomes_safety_scores", outcomes_safety_scores); dbWriteTable(con, "outcomes_safety_scores", outcomes_safety_scores)
+dbRemoveTable(con, "outcomes_complications_and_deaths", outcomes_complications_and_deaths); dbWriteTable(con, "outcomes_complications_and_deaths", outcomes_complications_and_deaths)
+
+#Pull Data from DB
+dbListTables(con)
+dbListFields(con, "hospital_info")
+dbReadTable(con, "hospital_info")
+res <- dbSendQuery(con, "SELECT * FROM hospital_info WHERE Facility_ID = '400120'")
+dbFetch(res)
+
 ```
