@@ -1,0 +1,91 @@
+---
+title: "load_data"
+author: "Franklin Yang"
+date: "11/6/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+Run this Rmd file to refresh the database
+Install packages
+```{r}
+# install.packages('RSQLite')
+```
+
+Load data into sqlite
+```{r}
+library(DBI)
+# for testing
+# con <- dbConnect(RSQLite::SQLite(), ":memory:")
+
+con <- dbConnect(RSQLite::SQLite(), "../database/db.sqlite")
+hospital_info <- read.csv(file="../data/hospital_general_information.csv", header=TRUE, sep=",")
+
+# spending tables
+spending_by_claim <- read.csv(file="../data/claims/medicare_hospital_spending_by_claim.csv", header=TRUE, sep=",")
+spending_by_beneficiary <- read.csv(file="../data/claims/medicare_spending_per_beneficiary___hospital.csv", header=TRUE, sep=",")
+
+# outcomes tables
+outcomes_performance_scores <- read.csv(
+  file="../data/outcomes/hospital_value-based_purchasing__hvbp____total_performance_score.csv",
+  header=TRUE,
+  sep=",")
+outcomes_efficiency_scores <- read.csv(
+  file="../data/outcomes/hospital_value-based_purchasing__hvbp____efficiency_scores.csv",
+  header=TRUE, sep=","
+)
+outcomes_readmissions_reductions <- read.csv(
+  file="../data/outcomes/hospital_readmissions_reduction_program.csv",
+  header=TRUE,
+  sep=","
+)
+outcomes_clinical_care_domain_scores <- read.csv(
+  file="../data/outcomes/hospital_value-based_purchasing__hvbp____clinical_care_domain_scores.csv",
+  header=TRUE,
+  sep=","
+)
+outcomes_hac_reductions <- read.csv(
+  file="../data/outcomes/hospital-acquired_condition_reduction_program.csv",
+  header=TRUE,
+  sep=","
+)
+outcomes_acs_measures <- read.csv(
+  file="../data/outcomes/hospital_acs_measures.csv",
+  header=TRUE,
+  sep=","
+)
+outcomes_pt_experience_scores <- read.csv(
+  file="../data/outcomes/hospital_value-based_purchasing__hvbp____patient_experience_of_care_domain_scores__hcahps_.csv",
+  header=TRUE,
+  sep=","
+)
+outcomes_safety_scores <- read.csv(
+  file="../data/outcomes/hospital_value-based_purchasing__hvbp____safety.csv",
+  header=TRUE,
+  sep=","
+)
+outcomes_complications_and_deaths <- read.csv(
+  file="../data/outcomes/complications_and_deaths_-_hospital.csv",
+  header=TRUE,
+  sep=","
+)
+
+# load tables
+dbWriteTable(con, "hospital_info", hospital_info)
+dbWriteTable(con, "spending_by_claim", spending_by_claim)
+dbWriteTable(con, "spending_by_beneficary", spending_by_beneficiary)
+dbWriteTable(con, "outcomes_performance_scores", outcomes_performance_scores)
+dbWriteTable(con, "outcomes_efficiency_scores", outcomes_efficiency_scores)
+dbWriteTable(con, "outcomes_readmissions_reductions", outcomes_readmissions_reductions)
+dbWriteTable(con, "outcomes_clinical_care_domain_scores", outcomes_clinical_care_domain_scores)
+dbWriteTable(con, "outcomes_hac_reductions", outcomes_hac_reductions)
+dbWriteTable(con, "outcomes_acs_measures", outcomes_acs_measures)
+dbWriteTable(con, "outcomes_pt_experience_scores", outcomes_pt_experience_scores)
+dbWriteTable(con, "outcomes_safety_scores", outcomes_safety_scores)
+dbWriteTable(con, "outcomes_complications_and_deaths", outcomes_complications_and_deaths)
+```
