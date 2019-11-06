@@ -34,9 +34,22 @@ hospital_info <- read.csv(file="../data/hospital_general_information.csv", heade
 names(hospital_info) <- gsub("\\.", "_", names(hospital_info))
 
 
-# spending tables
-spending_by_claim <- read.csv(file="../data/claims/medicare_hospital_spending_by_claim.csv", header=TRUE, sep=",")
-spending_by_beneficiary <- read.csv(file="../data/claims/medicare_spending_per_beneficiary___hospital.csv", header=TRUE, sep=",")
+# spending by claim
+spending_by_claim <- read.csv(file="../data/claims/medicare_hospital_spending_by_claim.csv", header=TRUE, sep=",",
+                              colClasses = c("character", "character", "character", "factor", "factor", "numeric", "numeric", "numeric", "factor", "factor", "factor", "factor", "factor"))
+  #Clean %'s
+spending_by_claim$Percent.of.Spending.Hospital <- as.numeric(gsub("%", "", spending_by_claim$Percent.of.Spending.Hospital))
+spending_by_claim$Percent.of.Spending.State <- as.numeric(gsub("%", "", spending_by_claim$Percent.of.Spending.State))
+spending_by_claim$Percent.of.Spending.Nation <- as.numeric(gsub("%", "", spending_by_claim$Percent.of.Spending.Nation))
+  #replace .'s with _s
+names(spending_by_claim) <- gsub("\\.", "_", names(spending_by_claim))
+
+# spending by beneficiary
+spending_by_beneficiary <- read.csv(file="../data/claims/medicare_spending_per_beneficiary___hospital.csv", header=TRUE, sep=",",
+                                    colClasses = c("character", "character", "character", "character", "character", "character", "character", "character", "factor", "factor", "factor", "factor", "factor", "factor", "factor"))
+  #Clean spending field
+spending_by_beneficiary$Score <- as.numeric(ifelse(spending_by_beneficiary$Score == "Not Available", NA, spending_by_beneficiary$Score))
+
 
 # outcomes tables
 outcomes_performance_scores <- read.csv(
@@ -103,5 +116,10 @@ dbListFields(con, "hospital_info")
 dbReadTable(con, "hospital_info")
 res <- dbSendQuery(con, "SELECT * FROM hospital_info WHERE Facility_ID = '400120'")
 dbFetch(res)
+
+dbListFields(con, "spending_by_beneficiary")
+
+# Disconnect from the database
+dbDisconnect(con)
 
 ```
