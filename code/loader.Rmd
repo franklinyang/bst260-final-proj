@@ -49,7 +49,8 @@ spending_by_beneficiary <- read.csv(file="../data/claims/medicare_spending_per_b
                                     colClasses = c("character", "character", "character", "character", "character", "character", "character", "character", "factor", "factor", "factor", "factor", "factor", "factor", "factor"))
   #Clean spending field
 spending_by_beneficiary$Score <- as.numeric(ifelse(spending_by_beneficiary$Score == "Not Available", NA, spending_by_beneficiary$Score))
-
+  #replace .'s with _s
+names(spending_by_beneficiary) <- gsub("\\.", "_", names(spending_by_beneficiary))
 
 # outcomes tables
 outcomes_performance_scores <- read.csv(
@@ -114,10 +115,13 @@ dbRemoveTable(con, "outcomes_complications_and_deaths", outcomes_complications_a
 dbListTables(con)
 dbListFields(con, "hospital_info")
 dbReadTable(con, "hospital_info")
+dbReadTable(con, "spending_by_claim")
 res <- dbSendQuery(con, "SELECT * FROM hospital_info WHERE Facility_ID = '400120'")
 dbFetch(res)
 
-dbListFields(con, "spending_by_beneficiary")
+#Join example
+res <- dbFetch(dbSendQuery(con, "SELECT a.*, b.Avg_Spending_Per_Episode_Hospital FROM hospital_info a left join spending_by_claim b on a.facility_id = b.facility_id"))
+
 
 # Disconnect from the database
 dbDisconnect(con)
