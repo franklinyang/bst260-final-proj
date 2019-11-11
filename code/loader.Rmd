@@ -120,7 +120,13 @@ res <- dbSendQuery(con, "SELECT * FROM hospital_info WHERE Facility_ID = '400120
 dbFetch(res)
 
 #Join example
-res <- dbFetch(dbSendQuery(con, "SELECT a.*, b.Avg_Spending_Per_Episode_Hospital FROM hospital_info a left join spending_by_claim b on a.facility_id = b.facility_id"))
+data <- dbFetch(dbSendQuery(con, 
+                           "SELECT a.*, 
+                                b.Avg_Spending_Per_Episode_Hospital 
+                          FROM hospital_info a 
+                          left join spending_by_claim b 
+                                on a.facility_id = b.facility_id
+                                and b.claim_type = 'Total'"))
 
 
 # Disconnect from the database
