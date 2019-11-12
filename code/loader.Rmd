@@ -53,81 +53,156 @@ spending_by_beneficiary$Score <- as.numeric(ifelse(spending_by_beneficiary$Score
 names(spending_by_beneficiary) <- gsub("\\.", "_", names(spending_by_beneficiary))
 
 # outcomes tables
+# https://data.medicare.gov/Hospital-Compare/Hospital-Value-Based-Purchasing-HVBP-Total-Perform/ypbt-wvdk
 outcomes_performance_scores <- read.csv(
   file="../data/outcomes/hospital_value-based_purchasing__hvbp____total_performance_score.csv",
   header=TRUE,
-  sep=",")
+  sep=",", 
+  colClasses = c("character", "character", "character", "character", "character", "character", "character", "factor", "factor", "factor", "factor", "factor", "factor", "factor", "factor", "factor", "character"))
+names(outcomes_performance_scores) <- gsub("\\.", "_", names(outcomes_performance_scores))
+
 outcomes_efficiency_scores <- read.csv(
   file="../data/outcomes/hospital_value-based_purchasing__hvbp____efficiency_scores.csv",
-  header=TRUE, sep=","
+  header=TRUE, sep=",",
+  colClasses = c("character", "character", "character", "character", "character", "character", "character", "factor", "factor", "factor", "factor", "character", "character", "character", "character")
 )
+names(outcomes_performance_scores) <- gsub("\\.", "_", names(outcomes_performance_scores))
+
+
 outcomes_readmissions_reductions <- read.csv(
   file="../data/outcomes/hospital_readmissions_reduction_program.csv",
   header=TRUE,
-  sep=","
+  sep=",", 
+  colClasses = c("character", "character", "character", "character", "factor", "character", "factor", "factor", "factor", "factor", "Date")
 )
+names(outcomes_readmissions_reductions) <- gsub("\\.", "_", names(outcomes_readmissions_reductions))
+
+
+# https://data.medicare.gov/Hospital-Compare/Hospital-Value-Based-Purchasing-HVBP-Clinical-Care/pudb-wetr
 outcomes_clinical_care_domain_scores <- read.csv(
   file="../data/outcomes/hospital_value-based_purchasing__hvbp____clinical_care_domain_scores.csv",
   header=TRUE,
-  sep=","
+  sep=",",
+  colClasses = c("character", "character", "character", "character", "character", "character", "character",
+                 "factor", "factor", "factor", "factor", "character", "character", "character",
+                 "factor", "factor", "factor", "factor", "character", "character", "character",
+                 "factor", "factor", "factor", "factor", "character", "character", "character",
+                 "factor", "factor", "factor", "factor", "character", "character", "character",
+                 "character")
 )
+names(outcomes_clinical_care_domain_scores) <- gsub("\\.", "_", names(outcomes_clinical_care_domain_scores))
+
+# https://data.medicare.gov/Hospital-Compare/Hospital-Acquired-Condition-Reduction-Program/yq43-i98g
 outcomes_hac_reductions <- read.csv(
   file="../data/outcomes/hospital-acquired_condition_reduction_program.csv",
   header=TRUE,
-  sep=","
+  sep=",",
+  colClasses = c("character", "character", "character", "character",
+                 "factor", "character",
+                 # TODO (Franklin): Parsing these dates returns errors so we're commenting it out
+                 # "Date", "Date",
+                 "character", "character",
+                 "factor", "character",
+                 "factor", "character",
+                 "factor", "character",
+                 "factor", "character",
+                 "factor", "character",
+                 "factor", "character",
+                 "factor", "character",
+                 # "Date", "Date",
+                 "character", "character",
+                 "factor", "character",
+                 "character", "character")
 )
+names(outcomes_hac_reductions) <- gsub("\\.", "_", names(outcomes_hac_reductions))
+
+# https://data.medicare.gov/Hospital-Compare/Hospital-ACS-Measures/akfs-5dgr
 outcomes_acs_measures <- read.csv(
   file="../data/outcomes/hospital_acs_measures.csv",
   header=TRUE,
-  sep=","
+  sep=",",
+  colClasses = c("character", "character", "character", "factor", "character",
+                 "character", "factor", "character",
+                 "character", "factor", "character")
 )
+names(outcomes_acs_measures) <- gsub("\\.", "_", names(outcomes_acs_measures))
+
+# https://data.medicare.gov/Hospital-Compare/Hospital-Value-Based-Purchasing-HVBP-Patient-Exper/avtz-f2ge
 outcomes_pt_experience_scores <- read.csv(
   file="../data/outcomes/hospital_value-based_purchasing__hvbp____patient_experience_of_care_domain_scores__hcahps_.csv",
   header=TRUE,
-  sep=","
+  sep=",",
+  colClasses = c("character", "character", "character", "character", "character", "character", "character",
+                 "factor", "factor", "factor", "factor", "factor", "character", "character", "character",
+                 "factor", "factor", "factor", "factor", "factor", "character", "character", "character",
+                 "factor", "factor", "factor", "factor", "factor", "character", "character", "character",
+                 "factor", "factor", "factor", "factor", "factor", "character", "character", "character",
+                 "factor", "factor", "factor", "factor", "factor", "character", "character", "character",
+                 "factor", "factor", "factor", "factor", "factor", "character", "character", "character",
+                 "factor", "factor", "factor", "factor", "factor", "character", "character", "character",
+                 "character")
 )
+names(outcomes_pt_experience_scores) <- gsub("\\.", "_", names(outcomes_pt_experience_scores))
+
+# https://data.medicare.gov/Hospital-Compare/Hospital-Value-Based-Purchasing-HVBP-Safety/dgmq-aat3
 outcomes_safety_scores <- read.csv(
   file="../data/outcomes/hospital_value-based_purchasing__hvbp____safety.csv",
   header=TRUE,
-  sep=","
+  sep=",",
+  colClasses = c("character", "character", "character", "character", "character", "character", "character",
+                 "factor", "factor", "factor", "factor", "character", "character", "character",
+                 "factor", "factor", "factor", "factor", "character", "character", "character", "character",
+                 "factor", "factor", "factor", "factor", "character", "character", "character",
+                 "factor", "factor", "factor", "factor", "character", "character", "character",
+                 "factor", "factor", "factor", "factor", "character", "character", "character",
+                 "factor", "factor", "factor", "factor", "character", "character", "character",
+                 "factor", "factor", "factor", "factor", "character", "character", "character", "character")
 )
+names(outcomes_safety_scores) <- gsub("\\.", "_", names(outcomes_safety_scores))
+
+# TODO (Franklin)
+# https://data.medicare.gov/Hospital-Compare/Complications-and-Deaths-Hospital/ynj2-r877
 outcomes_complications_and_deaths <- read.csv(
   file="../data/outcomes/complications_and_deaths_-_hospital.csv",
   header=TRUE,
   sep=","
+  # colClasses = c("character", "character", "character", "character", "character", "character", "character",
+  #               "character", "character", "character", "character", 
+  #               "factor", "factor", "factor", "factor", "character",
+  #               "Date", "Date", "character")
 )
+names(outcomes_complications_and_deaths) <- gsub("\\.", "_", names(outcomes_complications_and_deaths))
 
+
+# delete tables
+dbRemoveTable(con, "hospital_info", hospital_info)
+dbRemoveTable(con, "spending_by_claim", spending_by_claim)
+dbRemoveTable(con, "spending_by_beneficiary", spending_by_beneficiary)
+dbRemoveTable(con, "outcomes_performance_scores", outcomes_performance_scores)
+dbRemoveTable(con, "outcomes_efficiency_scores", outcomes_efficiency_scores)
+dbRemoveTable(con, "outcomes_readmissions_reductions", outcomes_readmissions_reductions)
+dbRemoveTable(con, "outcomes_clinical_care_domain_scores", outcomes_clinical_care_domain_scores)
+dbRemoveTable(con, "outcomes_hac_reductions", outcomes_hac_reductions)
+dbRemoveTable(con, "outcomes_acs_measures", outcomes_acs_measures)
+dbRemoveTable(con, "outcomes_pt_experience_scores", outcomes_pt_experience_scores)
+dbRemoveTable(con, "outcomes_safety_scores", outcomes_safety_scores)
+dbRemoveTable(con, "outcomes_complications_and_deaths", outcomes_complications_and_deaths)
 # load tables
-dbRemoveTable(con, "hospital_info", hospital_info); dbWriteTable(con, "hospital_info", hospital_info)
-dbRemoveTable(con, "spending_by_claim", spending_by_claim); dbWriteTable(con, "spending_by_claim", spending_by_claim)
-dbRemoveTable(con, "spending_by_beneficiary", spending_by_beneficiary); dbWriteTable(con, "spending_by_beneficiary", spending_by_beneficiary)
-dbRemoveTable(con, "outcomes_performance_scores", outcomes_performance_scores); dbWriteTable(con, "outcomes_performance_scores", outcomes_performance_scores)
-dbRemoveTable(con, "outcomes_efficiency_scores", outcomes_efficiency_scores); dbWriteTable(con, "outcomes_efficiency_scores", outcomes_efficiency_scores)
-dbRemoveTable(con, "outcomes_readmissions_reductions", outcomes_readmissions_reductions); dbWriteTable(con, "outcomes_readmissions_reductions", outcomes_readmissions_reductions)
-dbRemoveTable(con, "outcomes_clinical_care_domain_scores", outcomes_clinical_care_domain_scores); dbWriteTable(con, "outcomes_clinical_care_domain_scores", outcomes_clinical_care_domain_scores)
-dbRemoveTable(con, "outcomes_hac_reductions", outcomes_hac_reductions); dbWriteTable(con, "outcomes_hac_reductions", outcomes_hac_reductions)
-dbRemoveTable(con, "outcomes_acs_measures", outcomes_acs_measures); dbWriteTable(con, "outcomes_acs_measures", outcomes_acs_measures)
-dbRemoveTable(con, "outcomes_pt_experience_scores", outcomes_pt_experience_scores); dbWriteTable(con, "outcomes_pt_experience_scores", outcomes_pt_experience_scores)
-dbRemoveTable(con, "outcomes_safety_scores", outcomes_safety_scores); dbWriteTable(con, "outcomes_safety_scores", outcomes_safety_scores)
-dbRemoveTable(con, "outcomes_complications_and_deaths", outcomes_complications_and_deaths); dbWriteTable(con, "outcomes_complications_and_deaths", outcomes_complications_and_deaths)
+dbWriteTable(con, "hospital_info", hospital_info)
+dbWriteTable(con, "spending_by_claim", spending_by_claim)
+dbWriteTable(con, "spending_by_beneficiary", spending_by_beneficiary)
+dbWriteTable(con, "outcomes_performance_scores", outcomes_performance_scores)
+dbWriteTable(con, "outcomes_efficiency_scores", outcomes_efficiency_scores)
+dbWriteTable(con, "outcomes_readmissions_reductions", outcomes_readmissions_reductions)
+dbWriteTable(con, "outcomes_clinical_care_domain_scores", outcomes_clinical_care_domain_scores)
+dbWriteTable(con, "outcomes_hac_reductions", outcomes_hac_reductions)
+dbWriteTable(con, "outcomes_acs_measures", outcomes_acs_measures)
+dbWriteTable(con, "outcomes_pt_experience_scores", outcomes_pt_experience_scores)
+dbWriteTable(con, "outcomes_safety_scores", outcomes_safety_scores)
+dbWriteTable(con, "outcomes_complications_and_deaths", outcomes_complications_and_deaths)
 
 #Pull Data from DB
 dbListTables(con)
-dbListFields(con, "hospital_info")
-dbReadTable(con, "hospital_info")
-dbReadTable(con, "spending_by_claim")
-res <- dbSendQuery(con, "SELECT * FROM hospital_info WHERE Facility_ID = '400120'")
-dbFetch(res)
-
-#Join example
-data <- dbFetch(dbSendQuery(con, 
-                           "SELECT a.*, 
-                                b.Avg_Spending_Per_Episode_Hospital 
-                          FROM hospital_info a 
-                          left join spending_by_claim b 
-                                on a.facility_id = b.facility_id
-                                and b.claim_type = 'Total'"))
-
 
 # Disconnect from the database
 dbDisconnect(con)
