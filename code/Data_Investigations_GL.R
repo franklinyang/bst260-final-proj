@@ -173,7 +173,7 @@ hospital_info %>%
 #Look at deaths by spending
 hospital_info %>% 
   filter(Hospital_Type == "Acute Care Hospitals") %>% 
-  #filter(State == "MA") %>% 
+  filter(State == "MA") %>% 
   ggplot() + 
   geom_point(aes(x = total_spend, y = complications_score, color = Hospital_Ownership), alpha = 0.5) + 
   #geom_point(aes(x = total_spend, y = complications_score, color = Hospital_overall_rating), alpha = 0.5) + 

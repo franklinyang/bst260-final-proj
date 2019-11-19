@@ -173,6 +173,25 @@ outcomes_complications_and_deaths <- read.csv(
 )
 names(outcomes_complications_and_deaths) <- gsub("\\.", "_", names(outcomes_complications_and_deaths))
 
+### Census Data
+census_data <- read.csv(file="../data/census_data/ACS_17_5YR_DP03_with_ann.csv",
+  header=TRUE,sep=",")
+
+#Remove header row in row 1
+census_data <- census_data[-1,]
+
+#Fix names:
+library(readxl)
+library(dplyr)
+names_census <- read_excel("../data/census_data/census_headers.xlsx")
+names_census <- names_census[2,]
+names_census <- as.character(names_census)
+
+names(census_data) <- names_census
+#View(census_data)
+#important fields: 
+census_data %>% select(geography, estimate_income_and_benefits_in_2017_inflation_adjusted_dollars_total_households_median_household_income_dollars, estimate_income_and_benefits_in_2017_inflation_adjusted_dollars_with_earnings_mean_earnings_dollars, estimate_income_and_benefits_in_2017_inflation_adjusted_dollars_with_social_security, estimate_income_and_benefits_in_2017_inflation_adjusted_dollars_with_retirement_income, estimate_income_and_benefits_in_2017_inflation_adjusted_dollars_with_retirement_income_mean_retirement_income_dollars,estimate_income_and_benefits_in_2017_inflation_adjusted_dollars_per_capita_income_dollars,estimate_health_insurance_coverage_civilian_noninstitutionalized_population, estimate_health_insurance_coverage_civilian_noninstitutionalized_population_with_health_insurance_coverage, estimate_health_insurance_coverage_civilian_noninstitutionalized_population_no_health_insurance_coverage,percent_percentage_of_families_and_people_whose_income_in_the_past_12_months_is_below_the_poverty_level_all_people) %>% View()
+
 
 # delete tables
 dbRemoveTable(con, "hospital_info", hospital_info)
@@ -187,6 +206,7 @@ dbRemoveTable(con, "outcomes_acs_measures", outcomes_acs_measures)
 dbRemoveTable(con, "outcomes_pt_experience_scores", outcomes_pt_experience_scores)
 dbRemoveTable(con, "outcomes_safety_scores", outcomes_safety_scores)
 dbRemoveTable(con, "outcomes_complications_and_deaths", outcomes_complications_and_deaths)
+dbRemoveTable(con, "census_data", census_data)
 # load tables
 dbWriteTable(con, "hospital_info", hospital_info)
 dbWriteTable(con, "spending_by_claim", spending_by_claim)
@@ -200,6 +220,7 @@ dbWriteTable(con, "outcomes_acs_measures", outcomes_acs_measures)
 dbWriteTable(con, "outcomes_pt_experience_scores", outcomes_pt_experience_scores)
 dbWriteTable(con, "outcomes_safety_scores", outcomes_safety_scores)
 dbWriteTable(con, "outcomes_complications_and_deaths", outcomes_complications_and_deaths)
+dbWriteTable(con, "census_data", census_data)
 
 #Pull Data from DB
 dbListTables(con)
