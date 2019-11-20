@@ -13,6 +13,7 @@ library(ggthemes)
 #setwd("/Users/genevievelyons/Intro to DS/bst260-final-proj/code")
 con <- dbConnect(RSQLite::SQLite(), "../database/db.sqlite")
 
+
 ####################
 #Pull Data from DB
 ####################
