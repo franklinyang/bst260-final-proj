@@ -192,6 +192,15 @@ names(census_data) <- names_census
 #important fields: 
 census_data %>% select(geography, estimate_income_and_benefits_in_2017_inflation_adjusted_dollars_total_households_median_household_income_dollars, estimate_income_and_benefits_in_2017_inflation_adjusted_dollars_with_earnings_mean_earnings_dollars, estimate_income_and_benefits_in_2017_inflation_adjusted_dollars_with_social_security, estimate_income_and_benefits_in_2017_inflation_adjusted_dollars_with_retirement_income, estimate_income_and_benefits_in_2017_inflation_adjusted_dollars_with_retirement_income_mean_retirement_income_dollars,estimate_income_and_benefits_in_2017_inflation_adjusted_dollars_per_capita_income_dollars,estimate_health_insurance_coverage_civilian_noninstitutionalized_population, estimate_health_insurance_coverage_civilian_noninstitutionalized_population_with_health_insurance_coverage, estimate_health_insurance_coverage_civilian_noninstitutionalized_population_no_health_insurance_coverage,percent_percentage_of_families_and_people_whose_income_in_the_past_12_months_is_below_the_poverty_level_all_people) %>% View()
 
+### Census Data - Population
+census_data_pop <- read.csv(file="../data/census_data/PEP_2018_PEPANNRES_with_ann_populationestimates.csv",
+  header=TRUE,sep=",")
+
+census_pop_names <- c("id", "id2", "geography", "census_2010base", "est_base_2010", "census_2010", "census_2011", "census_2012", "census_2013", "census_2014", "census_2015", "census_2016", "census_2017", "census_2018")
+
+names(census_data_pop) <- census_pop_names
+
+census_data_pop <- census_data_pop[-1,]
 
 # delete tables
 dbRemoveTable(con, "hospital_info", hospital_info)
@@ -207,6 +216,7 @@ dbRemoveTable(con, "outcomes_pt_experience_scores", outcomes_pt_experience_score
 dbRemoveTable(con, "outcomes_safety_scores", outcomes_safety_scores)
 dbRemoveTable(con, "outcomes_complications_and_deaths", outcomes_complications_and_deaths)
 dbRemoveTable(con, "census_data", census_data)
+dbRemoveTable(con, "census_data_pop", census_data_pop)
 # load tables
 dbWriteTable(con, "hospital_info", hospital_info)
 dbWriteTable(con, "spending_by_claim", spending_by_claim)
@@ -221,6 +231,8 @@ dbWriteTable(con, "outcomes_pt_experience_scores", outcomes_pt_experience_scores
 dbWriteTable(con, "outcomes_safety_scores", outcomes_safety_scores)
 dbWriteTable(con, "outcomes_complications_and_deaths", outcomes_complications_and_deaths)
 dbWriteTable(con, "census_data", census_data)
+dbWriteTable(con, "census_data_pop", census_data_pop)
+
 
 #Pull Data from DB
 dbListTables(con)

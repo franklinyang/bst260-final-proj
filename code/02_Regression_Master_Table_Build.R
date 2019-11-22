@@ -29,6 +29,7 @@ library(dplyr)
 library(tidyverse)
 library(ggplot2)
 library(ggthemes)
+library(openintro)
 
 #setwd("/Users/genevievelyons/Intro to DS/bst260-final-proj/code")
 con <- dbConnect(RSQLite::SQLite(), "../database/db.sqlite")
@@ -55,7 +56,7 @@ hospital_info <- dbFetch(dbSendQuery(con,
                           left join spending_by_claim b 
                                 on a.facility_id = b.facility_id
                                 and b.Claim_Type in('Total','Outpatient','Inpatient')
-                          WHERE Hospital_Type = 'Acute Care Hospitals'"))
+                          WHERE Hospital_Type = 'Acute Care Hospitals' and a.facility_id is not null"))
     #QC:
     #View(hospital_info)
     #hospital_info %>% filter(Facility_ID =="100183") %>% arrange(Claim_Type) %>% View()
@@ -177,15 +178,68 @@ hospital_info$patient_level_complications_score[is.nan(hospital_info$patient_lev
 
 
 ####################
-#Healthcare Policy Focus (IV: Medicaid Expansion)
+#Healthcare Policy Focused States (IV: Medicaid Expansion)
 ####################
 
+not_medicaid_expansion <- c("WY", "SD", "WI", "KS", "OK", "TX", "MO", "MS", "TN", "AL", "GA", "FL", "SC", "NC", "ID", "UT", "NE")
 
+hospital_info <- hospital_info %>%
+  mutate(hc_policy_focused_state = ifelse(State %in% not_medicaid_expansion, 0,1)) 
 
 ####################
 #Census Data: median income, mean income, estimated income with social security, with retirement income, mean retirement income, per capita income, health insurance coverage, % below poverty line 
 ####################
 
+#Pull census data; clean up field names
+census_data <- dbFetch(dbSendQuery(con, 
+                                   "select a.geography, 
+                                      a.estimate_income_and_benefits_in_2017_inflation_adjusted_dollars_total_households_median_household_income_dollars as median_household_income, 
+                                      a.estimate_income_and_benefits_in_2017_inflation_adjusted_dollars_with_earnings_mean_earnings_dollars as mean_household_income, 
+                                      a.estimate_income_and_benefits_in_2017_inflation_adjusted_dollars_with_social_security as income_w_social_security, 
+                                      a.estimate_income_and_benefits_in_2017_inflation_adjusted_dollars_with_retirement_income as income_w_retirement, 
+                                      a.estimate_income_and_benefits_in_2017_inflation_adjusted_dollars_with_retirement_income_mean_retirement_income_dollars as mean_retirement_income, 
+                                      a.estimate_income_and_benefits_in_2017_inflation_adjusted_dollars_per_capita_income_dollars as income_per_capita, 
+                                      a.estimate_health_insurance_coverage_civilian_noninstitutionalized_population as pop_denominator_healthinsurance, 
+                                      a.estimate_health_insurance_coverage_civilian_noninstitutionalized_population_with_health_insurance_coverage as pop_with_healthinsurance, 
+                                      a.estimate_health_insurance_coverage_civilian_noninstitutionalized_population_no_health_insurance_coverage as pop_no_healthinsurance, 
+                                      a.percent_percentage_of_families_and_people_whose_income_in_the_past_12_months_is_below_the_poverty_level_all_people as perc_pop_below_poverty, 
+                                      b.census_2017 as pop_census_2017
+                                   from census_data a 
+                                   left join census_data_pop b 
+                                      on a.geography = b.geography"))
+
+#View(census_data)
+
+#Clean up the County/State Name#
+  #Pull the county/state names
+census_data$county <- unlist(str_split(census_data$geography, ', ', simplify = T))[,1]
+census_data$State <- unlist(str_split(census_data$geography, ', ', simplify = T))[,2]
+  #Get rid of "county"
+census_data$county <- gsub(" County","",census_data$county)
+  #Abbrevate states
+census_data$State <- state2abbr(census_data$State)
+  #Create Uppercase version of county for joining to hospital info
+census_data$County_Name <- toupper(census_data$county)
+  #Fix County Names that are different in census vs hospital data 
+census_data$County_Name <- ifelse(census_data$County_Name == "DEKALB", "DE KALB", census_data$County_Name)
+census_data$County_Name <- ifelse(census_data$County_Name == "DESOTO", "DE SOTO", census_data$County_Name)
+
+#DE KALB -> DEKALB in census data
+#DE SOTO -> DESOTO in census data
+
+  #QC: compare counties in one vs the other
+  hospital_info$County_Name[c(hospital_info$County_Name,'-', hospital_info$State) %in% c(census_data$County_Name,'-', census_data$State) == F] %>% length()
+  #197 non-joins (initially)
+  #many are N/A?
+  sum(is.na(hospital_info$County_Name) == T) #0. OK those are fine.
+  #look at them 
+  hospital_info[c(hospital_info$County_Name,'-', hospital_info$State) %in% c(census_data$County_Name,'-', census_data$State) == F,] %>% View()
+  hospital_info$County_Name[c(hospital_info$County_Name,'-', hospital_info$State) %in% c(census_data$County_Name,'-', census_data$State) == F] %>% View()
+  
+  
+  
+
+#join to hospital_info
 
 
 ####################
@@ -200,11 +254,19 @@ hospital_info$patient_level_complications_score[is.nan(hospital_info$patient_lev
 
 
 
+
+
+
+###########
+#Write Table, Disconnect from DB
+###########
+  
 # Make all columns lowercase
+names(hospital_info) <- tolower(names(hospital_info))
+  
+dbRemoveTable(con, "master_hospital_table", hospital_info)
+dbWriteTable(con, "master_hospital_table", hospital_info)
 
-
-###########
-#Disconnect from DB
-###########
+dbFetch(dbSendQuery(con, "select * from master_hospital_table"))
 
 dbDisconnect(con)
