@@ -381,5 +381,6 @@ dbWriteTable(con, "master_hospital_table", hospital_info)
 
 #View(dbFetch(dbSendQuery(con, "select * from master_hospital_table")))
 
+#Disconnect
 dbDisconnect(con)
 
