@@ -19,7 +19,7 @@ master %>% ggplot()+
   geom_smooth(aes(total_spend,as.numeric(hospital_level_complications_score)))+
   facet_wrap(.~hospital_ownership)
 
-
+##
 ## Set up Categorical Median Household Income by Quartile
 master$income_cat[master$median_household_income <= 46180.25] <- 1
 master$income_cat[master$median_household_income > 46180.25 & master$median_household_income <= 53626] <- 2
