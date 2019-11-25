@@ -20,17 +20,67 @@ master %>% ggplot()+
   facet_wrap(.~hospital_ownership)
 
 
+
+master$income_cat <- rep(NA, nrow(master))
+for(i in 1:nrow(master)){
+  if(master$median_household_income[i] <= 46180.25){
+    master$income_cat[i] <- 1
+  } else if(master$median_household_income[i] <= 53626){
+    master$income_cat[i] <- 2
+  } else if (master$median_household_income[i] <= 56569.82){
+    master$income_cat[i] <- 3
+  } else {
+    master$income_cat[i] <- 3
+  }
+}
+
+master$income_cat[master$median_household_income <= 46180.25] <- 1
+master$income_cat[master$median_household_income > 46180.25 & master$median_household_income <= 53626] <- 2
+master$income_cat[master$median_household_income > 53626 & master$median_household_income <= 62532] <- 3
+master$income_cat[master$median_household_income > 62532] <- 4
+
 mod_hospital_complications <- lm(as.numeric(hospital_level_complications_score) ~ 
-                                   total_spend + 
-                                   I(total_spend^2) + 
+                                   ip_spend + 
+                                   I(ip_spend^2) + 
                                    hospital_ownership + 
-                                   total_spend*hospital_ownership + 
-                                   as.factor(hc_policy_focused_state), data = master)
+                                   ip_spend*hospital_ownership + 
+                                   hc_policy_focused_state+
+                                   hospital_density_per_100k_capita+
+                                   emergency_services+
+                                   as.factor(income_cat)+
+                                   perc_pop_below_poverty+
+                                   pop_census_2017+
+                                   I(pop_no_healthinsurance/pop_denominator_healthinsurance),
+                                 data = master)
 summary(mod_hospital_complications)
+
+plot(as.factor(master$income_cat))
+
+master %>% ggplot(aes(median_household_income))+
+  geom_histogram(color="black")+
+  scale_x_continuous(trans="log10")
+
+summary(master$median_household_income)[2]
+
+
+
+master %>% ggplot()+
+  geom_point(aes(total_spend,hospital_level_complications_score))+
+  geom_line(aes(total_spend,fitted(mod_hospital_complications)))
+  
 
 mod_spending <- lm(total_spend ~ as.factor(hc_policy_focused_state), data = master)
 summary(mod_spending)
 
+#mod_spendlog <- lm(hospital_level_complications_score ~ total_spend + 
+#                     log(total_spend)+
+#                     hospital_ownership + 
+#                     total_spend*hospital_ownership + 
+#                     hc_policy_focused_state, data=master)
+#summary(mod_spendlog)
+
+plot(mod_spendlog)
+plot(mod_hospital_complications)
 
 plot(as.factor(master$hc_policy_focused_state), master$ip_spend) 
 plot(as.factor(master$hc_policy_focused_state), master$total_performance_score_patient_experience)
