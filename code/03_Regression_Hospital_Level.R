@@ -36,4 +36,11 @@ plot(as.factor(master$hc_policy_focused_state), master$ip_spend)
 plot(as.factor(master$hc_policy_focused_state), master$total_performance_score_patient_experience)
 plot(as.factor(master$hc_policy_focused_state), as.numeric(master$hospital_overall_rating))
 
+master %>% ggplot()+
+  geom_point(aes(perc_pop_below_poverty, hospital_density_per_100k_capita, color = hospital_ownership))+
+  geom_smooth(aes(perc_pop_below_poverty, hospital_density_per_100k_capita))+
+  facet_wrap(.~region)
+
+mod_spendbylocation <- 
+
 dbDisconnect(con)
