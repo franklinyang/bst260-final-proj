@@ -43,6 +43,7 @@ mod_hospital_complications <- lm(as.numeric(hospital_level_complications_score) 
                                    as.factor(income_cat)+
                                    perc_pop_below_poverty+
                                    pop_census_2017+
+                                   region+
                                    I(pop_no_healthinsurance/pop_denominator_healthinsurance),
                                  data = master)
 summary(mod_hospital_complications)
@@ -94,5 +95,48 @@ master %>% ggplot()+
   facet_wrap(.~region)
 
 
+
+
+
+#################################
+# Massachusetts State Regression
+#################################
+
+massachusetts <- master %>% filter(state == 'MA')
+view(massachusetts)
+mod_hospital_complications_MA <- lm(as.numeric(hospital_level_complications_score) ~ 
+                                   ip_spend + 
+                                   I(ip_spend^2) + 
+                                   #hospital_ownership + 
+                                   #ip_spend*hospital_ownership + 
+                                   #hc_policy_focused_state+
+                                   hospital_density_per_100k_capita+
+                                   emergency_services+
+                                   as.factor(income_cat)+
+                                   perc_pop_below_poverty+
+                                   pop_census_2017+
+                                   I(pop_no_healthinsurance/pop_denominator_healthinsurance),
+                                 data = massachusetts)
+summary(mod_hospital_complications_MA)
+
+massachusetts %>% filter(hospital_ownership == "Voluntary non-profit - Private") %>% ggplot()+
+  geom_point(aes(total_spend,as.numeric(hospital_level_complications_score), color = as.factor(hc_policy_focused_state)))+
+  geom_smooth(aes(total_spend,as.numeric(hospital_level_complications_score)))
+
+newyork <- master %>% filter(state == 'NY')
+mod_hospital_complications_NY <- lm(as.numeric(hospital_level_complications_score) ~ 
+                                      ip_spend + 
+                                      I(ip_spend^2) + 
+                                      hospital_ownership + 
+                                      #ip_spend*hospital_ownership + 
+                                      #hc_policy_focused_state+
+                                      hospital_density_per_100k_capita+
+                                      emergency_services+
+                                      as.factor(income_cat)+
+                                      perc_pop_below_poverty+
+                                      pop_census_2017+
+                                      I(pop_no_healthinsurance/pop_denominator_healthinsurance),
+                                    data = newyork)
+summary(mod_hospital_complications_NY)
 
 dbDisconnect(con)
