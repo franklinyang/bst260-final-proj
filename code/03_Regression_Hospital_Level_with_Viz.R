@@ -29,9 +29,9 @@ master$income_cat[master$median_household_income > 62532] <- 4
 
 
 
-######################
-# Main Regression
-######################
+##########################################
+# Main Regression - Hospital Complications
+##########################################
 mod_hospital_complications <- lm(as.numeric(hospital_level_complications_score) ~ 
                                    ip_spend + 
                                    I(ip_spend^2) + 
@@ -46,6 +46,7 @@ mod_hospital_complications <- lm(as.numeric(hospital_level_complications_score) 
                                    #perc_pop_below_poverty+
                                    pop_census_2017+
                                    region+
+                                   as.factor(meets_criteria_for_meaningful_use_of_ehrs)+
                                    I(pop_no_healthinsurance/pop_denominator_healthinsurance),
                                  data = master)
 summary(mod_hospital_complications)
@@ -96,6 +97,21 @@ lim %>% ggplot()+
   geom_line(aes(ip_spend,fitted(mod_hospital_complications)), color = "blue") + 
   facet_wrap(. ~ income_cat + hc_policy_focused_state)
 
+#################################
+# Excess Readmissions Regression
+#################################
+
+mod_excess_readmit <- lm(excess_readmissions ~
+                           total_spend+
+                           pop_with_healthinsurance+
+                           as.factor(income_cat)+
+                           perc_pop_below_poverty+
+                           region+
+                           hospital_ownership+
+                           hc_policy_focused_state+
+                           hospital_density_per_100k_capita, data = master)
+summary(mod_excess_readmit)
+
 
 ##Excess Readmissions
 lim %>% ggplot()+
@@ -139,6 +155,18 @@ state %>% ggplot() +
 plot(mod_hospital_complications)
 
 #point 2157 is very high leverage, consider excluding.
+
+
+mod_bystate <- lm(hospital_level_complications_score ~ 
+                    ip_spend + 
+                    I(ip_spend^2) + 
+                    hc_policy_focused_state+
+                    ip_spend * hc_policy_focused_state + 
+                    hospital_density_per_100k_capita+
+                    income_cat+
+                    region,
+                  data = state)
+summary(mod_bystate)
   
 
 # Is "Policy Focused State Significant?" - Answer, not really?
@@ -197,8 +225,14 @@ mod_hospital_complications_MA <- lm(as.numeric(hospital_level_complications_scor
 summary(mod_hospital_complications_MA)
 
 massachusetts %>% filter(hospital_ownership == "Voluntary non-profit - Private") %>% ggplot()+
-  geom_point(aes(total_spend,as.numeric(hospital_level_complications_score), color = as.factor(hc_policy_focused_state)))+
+  geom_point(aes(total_spend,as.numeric(hospital_level_complications_score)))+
   geom_smooth(aes(total_spend,as.numeric(hospital_level_complications_score)))
+
+
+
+########################################
+# New York State Regression
+########################################
 
 newyork <- master %>% filter(state == 'NY')
 mod_hospital_complications_NY <- lm(as.numeric(hospital_level_complications_score) ~ 
@@ -215,5 +249,9 @@ mod_hospital_complications_NY <- lm(as.numeric(hospital_level_complications_scor
                                       I(pop_no_healthinsurance/pop_denominator_healthinsurance),
                                     data = newyork)
 summary(mod_hospital_complications_NY)
+
+newyork %>% filter(hospital_ownership == "Voluntary non-profit - Private") %>% ggplot()+
+  geom_point(aes(total_spend,as.numeric(hospital_level_complications_score)))+
+  geom_smooth(aes(total_spend,as.numeric(hospital_level_complications_score)))
 
 dbDisconnect(con)
