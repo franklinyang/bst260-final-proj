@@ -81,19 +81,34 @@ lim <- master %>%
 
 lim <- lim %>% filter(complete.cases(lim) == T)
 
+lim2 <- master %>%
+  mutate(perc_no_healthinsurance = pop_no_healthinsurance/pop_denominator_healthinsurance) %>%
+  select (hospital_level_complications_score, ip_spend, #excess_readmissions,
+          hospital_ownership ,
+          hc_policy_focused_state,
+          hospital_density_per_100k_capita,
+          emergency_services,
+          income_cat,
+          perc_pop_below_poverty,
+          pop_census_2017,
+          region,
+          perc_no_healthinsurance) 
+
+lim2 <- lim2 %>% filter(complete.cases(lim2) == T)
 
 ##Visualize the model against the data points
-lim %>% ggplot()+
+lim2 %>% 
+  ggplot()+
   geom_point(aes(ip_spend,hospital_level_complications_score, color = hospital_ownership, size = income_cat), alpha = 0.6)+
   geom_line(aes(ip_spend,fitted(mod_hospital_complications)), color = "blue") + 
   facet_wrap(. ~ region)
 
-lim %>% ggplot()+
+lim2 %>% ggplot()+
   geom_point(aes(ip_spend,hospital_level_complications_score, color = as.factor(income_cat)), alpha = 0.6)+
   geom_line(aes(ip_spend,fitted(mod_hospital_complications)), color = "blue") + 
   facet_wrap(. ~ region + hc_policy_focused_state)
 
-lim %>% ggplot()+
+lim2 %>% ggplot()+
   geom_point(aes(ip_spend,hospital_level_complications_score, color = region), alpha = 0.6)+
   geom_line(aes(ip_spend,fitted(mod_hospital_complications)), color = "blue") + 
   facet_wrap(. ~ income_cat + hc_policy_focused_state)
