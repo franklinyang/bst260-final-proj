@@ -38,19 +38,18 @@ mod_hospital_complications <- lm(as.numeric(hospital_level_complications_score) 
                                    I(ip_spend^2) + 
                                    hc_policy_focused_state+
                                    hospital_ownership + 
-                                   #ip_spend * hospital_ownership + 
-                                   #ip_spend * region+
                                    ip_spend * hc_policy_focused_state + 
                                    hospital_density_per_100k_capita+
                                    emergency_services+
                                    as.factor(income_cat)+
-                                   #perc_pop_below_poverty+
                                    pop_census_2017+
                                    region+
                                    as.factor(meets_criteria_for_meaningful_use_of_ehrs)+
                                    I(pop_no_healthinsurance/pop_denominator_healthinsurance),
                                  data = master)
 summary(mod_hospital_complications)
+
+confint(mod_hospital_complications)
 
 master %>% ggplot() + geom_boxplot(aes(hc_policy_focused_state, perc_pop_below_poverty))
 
@@ -128,6 +127,7 @@ mod_excess_readmit <- lm(excess_readmissions ~
                            hospital_density_per_100k_capita, data = master)
 summary(mod_excess_readmit)
 
+confint(mod_excess_readmit)
 
 ##Excess Readmissions
 lim %>% ggplot()+
@@ -232,6 +232,7 @@ mod_hospital_complications_MA <- lm(as.numeric(hospital_level_complications_scor
                                       I(ip_spend^2) + 
                                       hospital_density_per_100k_capita+
                                       emergency_services+
+                                      hospital_ownership+
                                       as.factor(income_cat)+
                                       perc_pop_below_poverty+
                                       pop_census_2017+
@@ -239,6 +240,8 @@ mod_hospital_complications_MA <- lm(as.numeric(hospital_level_complications_scor
                                       I(pop_no_healthinsurance/pop_denominator_healthinsurance),
                                     data = massachusetts)
 summary(mod_hospital_complications_MA)
+
+confint(mod_hospital_complications_MA)
 
 massachusetts %>% filter(hospital_ownership == "Voluntary non-profit - Private") %>% ggplot()+
   geom_point(aes(total_spend,as.numeric(hospital_level_complications_score)))+
@@ -254,40 +257,7 @@ mod_excess_readmit_MA <- lm(excess_readmissions ~
                            hospital_density_per_100k_capita, data = massachusetts)
 summary(mod_excess_readmit_MA)
 
-########################################
-# New York State Regression
-########################################
-
-newyork <- master %>% filter(state == 'NY')
-
-# Hospital COmplications
-mod_hospital_complications_NY <- lm(as.numeric(hospital_level_complications_score) ~ 
-                                      ip_spend + 
-                                      I(ip_spend^2) + 
-                                      hospital_ownership + 
-                                      hospital_density_per_100k_capita+
-                                      emergency_services+
-                                      as.factor(income_cat)+
-                                      perc_pop_below_poverty+
-                                      pop_census_2017+
-                                      meets_criteria_for_meaningful_use_of_ehrs+
-                                      I(pop_no_healthinsurance/pop_denominator_healthinsurance),
-                                    data = newyork)
-summary(mod_hospital_complications_NY)
-
-newyork %>% filter(hospital_ownership == "Voluntary non-profit - Private") %>% ggplot()+
-  geom_point(aes(total_spend,as.numeric(hospital_level_complications_score)))+
-  geom_smooth(aes(total_spend,as.numeric(hospital_level_complications_score)))
-
-# Excess Readmissions
-mod_excess_readmit_NY <- lm(excess_readmissions ~
-                              total_spend+
-                              pop_with_healthinsurance+
-                              as.factor(income_cat)+
-                              perc_pop_below_poverty+
-                              hospital_ownership+
-                              hospital_density_per_100k_capita, data = newyork)
-summary(mod_excess_readmit_NY)
+confint(mod_excess_readmit_MA)
 
 
 
@@ -311,6 +281,8 @@ mod_hospital_complications_TX <- lm(as.numeric(hospital_level_complications_scor
                                     data = texas)
 summary(mod_hospital_complications_TX)
 
+confint(mod_hospital_complications_TX)
+
 texas %>% ggplot()+
   geom_point(aes(total_spend,as.numeric(hospital_level_complications_score)))+
   geom_smooth(aes(total_spend,as.numeric(hospital_level_complications_score)))
@@ -325,5 +297,6 @@ mod_excess_readmit_TX <- lm(excess_readmissions ~
                               hospital_density_per_100k_capita, data = texas)
 summary(mod_excess_readmit_TX)
 
+confint(mod_excess_readmit_TX)
 
 dbDisconnect(con)
