@@ -220,6 +220,7 @@ mod_hospital_complications_MA <- lm(as.numeric(hospital_level_complications_scor
                                    as.factor(income_cat)+
                                    perc_pop_below_poverty+
                                    pop_census_2017+
+                                     meets_criteria_for_meaningful_use_of_ehrs+
                                    I(pop_no_healthinsurance/pop_denominator_healthinsurance),
                                  data = massachusetts)
 summary(mod_hospital_complications_MA)
