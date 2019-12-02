@@ -275,13 +275,14 @@ mod_excess_readmit_NY <- lm(excess_readmissions ~
 summary(mod_excess_readmit_NY)
 
 
+
 #############################################
-# Alabama Regression (Non-Medicaid Expansion)
+# Texas Regression (non-Medicaid Expansion)
 #############################################
-alabama <- master %>% filter(state == 'AL')
-View(alabama)
+texas <- master %>% filter(state == 'TX')
+
 # Hospital COmplications
-mod_hospital_complications_AL <- lm(as.numeric(hospital_level_complications_score) ~ 
+mod_hospital_complications_TX <- lm(as.numeric(hospital_level_complications_score) ~ 
                                       ip_spend + 
                                       I(ip_spend^2) + 
                                       hospital_ownership + 
@@ -289,24 +290,25 @@ mod_hospital_complications_AL <- lm(as.numeric(hospital_level_complications_scor
                                       as.factor(income_cat)+
                                       perc_pop_below_poverty+
                                       pop_census_2017+
+                                      emergency_services+
                                       meets_criteria_for_meaningful_use_of_ehrs+
                                       I(pop_no_healthinsurance/pop_denominator_healthinsurance),
-                                    data = alabama)
-summary(mod_hospital_complications_AL)
+                                    data = texas)
+summary(mod_hospital_complications_TX)
 
-alabama %>% ggplot()+
+texas %>% ggplot()+
   geom_point(aes(total_spend,as.numeric(hospital_level_complications_score)))+
   geom_smooth(aes(total_spend,as.numeric(hospital_level_complications_score)))
 
 # Excess Readmissions
-mod_excess_readmit_AL <- lm(excess_readmissions ~
+mod_excess_readmit_TX <- lm(excess_readmissions ~
                               total_spend+
                               pop_with_healthinsurance+
                               as.factor(income_cat)+
                               perc_pop_below_poverty+
                               hospital_ownership+
-                              hospital_density_per_100k_capita, data = alabama)
-summary(mod_excess_readmit_AL)
+                              hospital_density_per_100k_capita, data = texas)
+summary(mod_excess_readmit_TX)
 
 
 dbDisconnect(con)
