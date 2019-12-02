@@ -35,15 +35,15 @@ master$income_cat[master$median_household_income > 62532] <- 4
 mod_hospital_complications <- lm(as.numeric(hospital_level_complications_score) ~ 
                                    ip_spend + 
                                    I(ip_spend^2) + 
-                                   hospital_ownership + 
-                                   ip_spend*hospital_ownership + 
                                    hc_policy_focused_state+
+                                   hospital_ownership + 
+                                   ip_spend * hc_policy_focused_state + 
                                    hospital_density_per_100k_capita+
                                    emergency_services+
                                    as.factor(income_cat)+
-                                   perc_pop_below_poverty+
                                    pop_census_2017+
                                    region+
+                                   as.factor(meets_criteria_for_meaningful_use_of_ehrs)+
                                    I(pop_no_healthinsurance/pop_denominator_healthinsurance),
                                  data = master)
 summary(mod_hospital_complications)
