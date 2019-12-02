@@ -9,6 +9,7 @@ library(ggthemes)
 #setwd("/Users/genevievelyons/Intro to DS/bst260-final-proj/code")
 con <- dbConnect(RSQLite::SQLite(), "../database/db.sqlite")
 
+
 master <- dbFetch(dbSendQuery(con,"select * FROM master_hospital_table"))
 View(master)
 names(master)
@@ -68,15 +69,15 @@ summary(master$median_household_income)
 lim <- master %>%
   mutate(perc_no_healthinsurance = pop_no_healthinsurance/pop_denominator_healthinsurance) %>%
   select (hospital_level_complications_score, ip_spend, excess_readmissions,
-      hospital_ownership ,
-      hc_policy_focused_state,
-      hospital_density_per_100k_capita,
-      emergency_services,
-      income_cat,
-      perc_pop_below_poverty,
-      pop_census_2017,
-      region,
-      perc_no_healthinsurance) 
+          hospital_ownership ,
+          hc_policy_focused_state,
+          hospital_density_per_100k_capita,
+          emergency_services,
+          income_cat,
+          perc_pop_below_poverty,
+          pop_census_2017,
+          region,
+          perc_no_healthinsurance) 
 
 lim <- lim %>% filter(complete.cases(lim) == T)
 
@@ -139,8 +140,8 @@ state <- master %>%
             excess_readmissions = mean(na.omit(excess_readmissions)),
             hospital_density_per_100k_capita = mean(na.omit(hospital_density_per_100k_capita)),
             income_cat = mean(na.omit(income_cat))
-            )
-  
+  )
+
 
 View(state)
 
@@ -167,7 +168,7 @@ mod_bystate <- lm(hospital_level_complications_score ~
                     region,
                   data = state)
 summary(mod_bystate)
-  
+
 
 # Is "Policy Focused State Significant?" - Answer, not really?
 mod_spending <- lm(total_spend ~ as.factor(hc_policy_focused_state), data = master)
@@ -209,44 +210,52 @@ master %>% ggplot()+
 
 massachusetts <- master %>% filter(state == 'MA')
 view(massachusetts)
+
+#Hospital Complications
 mod_hospital_complications_MA <- lm(as.numeric(hospital_level_complications_score) ~ 
-                                   ip_spend + 
-                                   I(ip_spend^2) + 
-                                   #hospital_ownership + 
-                                   #ip_spend*hospital_ownership + 
-                                   #hc_policy_focused_state+
-                                   hospital_density_per_100k_capita+
-                                   emergency_services+
-                                   as.factor(income_cat)+
-                                   perc_pop_below_poverty+
-                                   pop_census_2017+
-                                     meets_criteria_for_meaningful_use_of_ehrs+
-                                   I(pop_no_healthinsurance/pop_denominator_healthinsurance),
-                                 data = massachusetts)
+                                      ip_spend + 
+                                      I(ip_spend^2) + 
+                                      hospital_density_per_100k_capita+
+                                      emergency_services+
+                                      as.factor(income_cat)+
+                                      perc_pop_below_poverty+
+                                      pop_census_2017+
+                                      meets_criteria_for_meaningful_use_of_ehrs+
+                                      I(pop_no_healthinsurance/pop_denominator_healthinsurance),
+                                    data = massachusetts)
 summary(mod_hospital_complications_MA)
 
 massachusetts %>% filter(hospital_ownership == "Voluntary non-profit - Private") %>% ggplot()+
   geom_point(aes(total_spend,as.numeric(hospital_level_complications_score)))+
   geom_smooth(aes(total_spend,as.numeric(hospital_level_complications_score)))
 
-
+# Excess Readmissions
+mod_excess_readmit_MA <- lm(excess_readmissions ~
+                           total_spend+
+                           pop_with_healthinsurance+
+                           as.factor(income_cat)+
+                           perc_pop_below_poverty+
+                           hospital_ownership+
+                           hospital_density_per_100k_capita, data = massachusetts)
+summary(mod_excess_readmit_MA)
 
 ########################################
 # New York State Regression
 ########################################
 
 newyork <- master %>% filter(state == 'NY')
+
+# Hospital COmplications
 mod_hospital_complications_NY <- lm(as.numeric(hospital_level_complications_score) ~ 
                                       ip_spend + 
                                       I(ip_spend^2) + 
                                       hospital_ownership + 
-                                      #ip_spend*hospital_ownership + 
-                                      #hc_policy_focused_state+
                                       hospital_density_per_100k_capita+
                                       emergency_services+
                                       as.factor(income_cat)+
                                       perc_pop_below_poverty+
                                       pop_census_2017+
+                                      meets_criteria_for_meaningful_use_of_ehrs+
                                       I(pop_no_healthinsurance/pop_denominator_healthinsurance),
                                     data = newyork)
 summary(mod_hospital_complications_NY)
@@ -254,5 +263,50 @@ summary(mod_hospital_complications_NY)
 newyork %>% filter(hospital_ownership == "Voluntary non-profit - Private") %>% ggplot()+
   geom_point(aes(total_spend,as.numeric(hospital_level_complications_score)))+
   geom_smooth(aes(total_spend,as.numeric(hospital_level_complications_score)))
+
+# Excess Readmissions
+mod_excess_readmit_NY <- lm(excess_readmissions ~
+                              total_spend+
+                              pop_with_healthinsurance+
+                              as.factor(income_cat)+
+                              perc_pop_below_poverty+
+                              hospital_ownership+
+                              hospital_density_per_100k_capita, data = newyork)
+summary(mod_excess_readmit_NY)
+
+
+#############################################
+# Alabama Regression (Non-Medicaid Expansion)
+#############################################
+alabama <- master %>% filter(state == 'AL')
+View(alabama)
+# Hospital COmplications
+mod_hospital_complications_AL <- lm(as.numeric(hospital_level_complications_score) ~ 
+                                      ip_spend + 
+                                      I(ip_spend^2) + 
+                                      hospital_ownership + 
+                                      hospital_density_per_100k_capita+
+                                      as.factor(income_cat)+
+                                      perc_pop_below_poverty+
+                                      pop_census_2017+
+                                      meets_criteria_for_meaningful_use_of_ehrs+
+                                      I(pop_no_healthinsurance/pop_denominator_healthinsurance),
+                                    data = alabama)
+summary(mod_hospital_complications_AL)
+
+alabama %>% ggplot()+
+  geom_point(aes(total_spend,as.numeric(hospital_level_complications_score)))+
+  geom_smooth(aes(total_spend,as.numeric(hospital_level_complications_score)))
+
+# Excess Readmissions
+mod_excess_readmit_AL <- lm(excess_readmissions ~
+                              total_spend+
+                              pop_with_healthinsurance+
+                              as.factor(income_cat)+
+                              perc_pop_below_poverty+
+                              hospital_ownership+
+                              hospital_density_per_100k_capita, data = alabama)
+summary(mod_excess_readmit_AL)
+
 
 dbDisconnect(con)
