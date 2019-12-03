@@ -26,3 +26,4 @@ vignettes/*.pdf
 rsconnect/
 .DS_Store
 *.swp
+app.R

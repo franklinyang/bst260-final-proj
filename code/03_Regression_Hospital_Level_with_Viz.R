@@ -1,3 +1,8 @@
+
+##########################################
+#Load Libraries
+##########################################
+
 rm(list=ls())
 library(DBI)
 library(dplyr)
@@ -6,114 +11,140 @@ library(ggplot2)
 library(ggthemes)
 
 
+##########################################
+#Establish Connection and pull data
+#See prior scripts for loading and master table build
+##########################################
+
 #setwd("/Users/genevievelyons/Intro to DS/bst260-final-proj/code")
 con <- dbConnect(RSQLite::SQLite(), "../database/db.sqlite")
 
-
 master <- dbFetch(dbSendQuery(con,"select * FROM master_hospital_table"))
-View(master)
-names(master)
+#View(master)
+#names(master)
 
-#Scatterplot of Total Spending by Hospital Level Complications Score, separated by hospital ownership type
-master %>% ggplot()+
-  geom_point(aes(total_spend,as.numeric(hospital_level_complications_score), color = as.factor(hc_policy_focused_state)))+
-  geom_smooth(aes(total_spend,as.numeric(hospital_level_complications_score)))+
-  facet_wrap(.~hospital_ownership)
 
-##
 ## Set up Categorical Median Household Income by Quartile
 master$income_cat[master$median_household_income <= 46180.25] <- 1
 master$income_cat[master$median_household_income > 46180.25 & master$median_household_income <= 53626] <- 2
 master$income_cat[master$median_household_income > 53626 & master$median_household_income <= 62532] <- 3
 master$income_cat[master$median_household_income > 62532] <- 4
+master$income_cat <- as.factor(master$income_cat)
 
-
-
+#Convert meaningful use into factor
+master$meets_criteria_for_meaningful_use_of_ehrs <- as.factor(master$meets_criteria_for_meaningful_use_of_ehrs)
 
 ##########################################
-# Main Regression - Hospital Complications
 ##########################################
-mod_hospital_complications <- lm(as.numeric(hospital_level_complications_score) ~ 
+# Regression #1 - Hospital Complications
+##########################################
+##########################################
+
+##########################################
+# Regression
+##########################################
+
+mod_hospital_complications <- lm(hospital_level_complications_score ~ 
                                    ip_spend + 
                                    I(ip_spend^2) + 
                                    hc_policy_focused_state+
-                                   hospital_ownership + 
                                    ip_spend * hc_policy_focused_state + 
+                                   hospital_ownership + 
                                    hospital_density_per_100k_capita+
                                    emergency_services+
-                                   as.factor(income_cat)+
+                                   income_cat+
                                    pop_census_2017+
                                    region+
-                                   as.factor(meets_criteria_for_meaningful_use_of_ehrs)+
+                                   meets_criteria_for_meaningful_use_of_ehrs+
                                    I(pop_no_healthinsurance/pop_denominator_healthinsurance),
                                  data = master)
-summary(mod_hospital_complications)
-
+summary(mod_hospital_complications) 
 confint(mod_hospital_complications)
 
-master %>% ggplot() + geom_boxplot(aes(hc_policy_focused_state, perc_pop_below_poverty))
+summary(master$ip_spend); sd(na.omit(master$ip_spend)) #Median 11,482; sd 2,651.519
+hist(master$ip_spend)
+hist(log10(master$ip_spend))
+summary(master$hospital_level_complications_score); sd(na.omit(master$hospital_level_complications_score))
+
+#Interpretation
+4.036e-04*11500-8.999e-09*11500^2+1.536e-05*11500 - (4.036e-04*9500-8.999e-09*9500^2+1.536e-05*9500) #0.459962 - HC focused
+(4.036e-04*11500-8.999e-09*11500^2+1.536e-05*11500 - (4.036e-04*9500-8.999e-09*9500^2+1.536e-05*9500))/(4.036e-04*9500-8.999e-09*9500^2+1.536e-05*9500) #14.5% - HC focused
+4.036e-04*11500-8.999e-09*11500^2 - (4.036e-04*9500-8.999e-09*9500^2) #0.429242 - not HC focused
+(4.036e-04*11500-8.999e-09*11500^2 - (4.036e-04*9500-8.999e-09*9500^2))/(4.036e-04*9500-8.999e-09*9500^2) #14.2% - not HC focused
+# All else being equal, a hospital in a state with a healthcare policy focus with an average IP spend per claim of $11,500 has a postoverative complications score 14.5% higher than a hospital that spends $2k per claim less (14.2% in non-healthcare policy focused states).
 
 
-# Interesting find, log10 of median household income is ~normal
-master %>% ggplot(aes(median_household_income))+
-  geom_histogram(color="black")+
-  scale_x_continuous(trans="log10")
+##########################################
+# Visualizations
+##########################################
 
-# Quartile Summary statistics for Median Household Income
-summary(master$median_household_income)
-
-
-
-
-lim <- master %>%
+#Limit the data so we can graph the model
+lim_complications <- master %>%
   mutate(perc_no_healthinsurance = pop_no_healthinsurance/pop_denominator_healthinsurance) %>%
-  select (hospital_level_complications_score, ip_spend, excess_readmissions,
-          hospital_ownership ,
-          hc_policy_focused_state,
-          hospital_density_per_100k_capita,
-          emergency_services,
-          income_cat,
-          perc_pop_below_poverty,
-          pop_census_2017,
-          region,
-          perc_no_healthinsurance) 
+  select (hospital_level_complications_score,
+            ip_spend,
+            hc_policy_focused_state,
+            hospital_ownership,
+            hospital_density_per_100k_capita,
+            emergency_services,
+            income_cat,
+            pop_census_2017,
+            region,
+            meets_criteria_for_meaningful_use_of_ehrs,
+            perc_no_healthinsurance,
+            state) 
 
-lim <- lim %>% filter(complete.cases(lim) == T)
+lim_complications <- lim_complications %>% filter(complete.cases(lim_complications) == T)
 
-lim2 <- master %>%
-  mutate(perc_no_healthinsurance = pop_no_healthinsurance/pop_denominator_healthinsurance) %>%
-  select (hospital_level_complications_score, ip_spend, #excess_readmissions,
-          hospital_ownership ,
-          hc_policy_focused_state,
-          hospital_density_per_100k_capita,
-          emergency_services,
-          income_cat,
-          perc_pop_below_poverty,
-          pop_census_2017,
-          region,
-          perc_no_healthinsurance) 
-
-lim2 <- lim2 %>% filter(complete.cases(lim2) == T)
-
-##Visualize the model against the data points
-lim2 %>% 
+## The fitted model - National - Hospital Type
+lim_complications %>% 
   ggplot()+
-  geom_point(aes(ip_spend,hospital_level_complications_score, color = hospital_ownership, size = income_cat), alpha = 0.6)+
-  geom_line(aes(ip_spend,fitted(mod_hospital_complications)), color = "blue") + 
-  facet_wrap(. ~ region)
-
-lim2 %>% ggplot()+
-  geom_point(aes(ip_spend,hospital_level_complications_score, color = as.factor(income_cat)), alpha = 0.6)+
+  geom_point(aes(ip_spend,hospital_level_complications_score, color = hospital_ownership), alpha = 0.7)+
   geom_line(aes(ip_spend,fitted(mod_hospital_complications)), color = "blue") + 
   facet_wrap(. ~ region + hc_policy_focused_state)
 
-lim2 %>% ggplot()+
-  geom_point(aes(ip_spend,hospital_level_complications_score, color = region), alpha = 0.6)+
+#Smoothed Model - National - Hospital Type
+lim_complications %>% 
+  ggplot()+
+  geom_point(aes(ip_spend,hospital_level_complications_score, color = hospital_ownership), alpha = 0.7)+
+  geom_smooth(aes(ip_spend,fitted(mod_hospital_complications))) + 
+  facet_wrap(. ~ region + hc_policy_focused_state)
+
+
+## The fitted model - National - Income cat
+lim_complications %>% 
+  ggplot()+
+  geom_point(aes(ip_spend,hospital_level_complications_score, color = income_cat), alpha = 0.7)+
   geom_line(aes(ip_spend,fitted(mod_hospital_complications)), color = "blue") + 
-  facet_wrap(. ~ income_cat + hc_policy_focused_state)
+  facet_wrap(. ~ region + hc_policy_focused_state)
+
+#Smoothed Model - National - Income cat
+lim_complications %>% 
+  ggplot()+
+  geom_point(aes(ip_spend,hospital_level_complications_score, color = income_cat), alpha = 0.7)+
+  geom_smooth(aes(ip_spend,fitted(mod_hospital_complications))) + 
+  facet_wrap(. ~ region + hc_policy_focused_state)
+
+#Massachusetts vs TX
+lim_complications %>% filter(state == "MA" | state == "TX") %>%
+  ggplot()+
+  geom_point(aes(ip_spend,hospital_level_complications_score, color = income_cat), alpha = 0.6)+
+  geom_smooth(aes(ip_spend,hospital_level_complications_score)) +
+  #geom_line(aes(ip_spend,fitted(mod_hospital_complications)), color = "blue") + 
+  facet_wrap(. ~ state, ncol = 1)
+
+
+#Massachusetts vs TX
+lim_complications %>% filter(state == "CA" | state == "TX") %>%
+  ggplot()+
+  geom_point(aes(ip_spend,hospital_level_complications_score, color = state), alpha = 0.6)+
+  geom_smooth(aes(ip_spend,hospital_level_complications_score, fill = state)) 
+  #geom_line(aes(ip_spend,fitted(mod_hospital_complications)), color = "blue") + 
+  #facet_wrap(. ~ state, ncol = 1)
+
 
 #################################
-# Excess Readmissions Regression
+# Regression #2 - Excess Readmissions Regression
 #################################
 
 mod_excess_readmit <- lm(excess_readmissions ~
@@ -189,13 +220,6 @@ summary(mod_bystate)
 mod_spending <- lm(total_spend ~ as.factor(hc_policy_focused_state), data = master)
 summary(mod_spending)
 
-#mod_spendlog <- lm(hospital_level_complications_score ~ total_spend + 
-#                     log(total_spend)+
-#                     hospital_ownership + 
-#                     total_spend*hospital_ownership + 
-#                     hc_policy_focused_state, data=master)
-#summary(mod_spendlog)
-
 
 
 # Residuals for main regression - not completely random
@@ -216,7 +240,9 @@ master %>% ggplot()+
   facet_wrap(.~region)
 
 
-
+#######################################################################################################################################################################################################################################
+#Delete all this?
+#######################################################################################################################################################################################################################################
 
 
 #################################
