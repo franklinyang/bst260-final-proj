@@ -61,6 +61,8 @@ mod_hospital_complications <- lm(hospital_level_complications_score ~
 summary(mod_hospital_complications) 
 confint(mod_hospital_complications)
 
+View(master)
+
 summary(master$ip_spend); sd(na.omit(master$ip_spend)) #Median 11,482; sd 2,651.519
 hist(master$ip_spend)
 hist(log10(master$ip_spend))
@@ -95,6 +97,8 @@ lim_complications <- master %>%
             state) 
 
 lim_complications <- lim_complications %>% filter(complete.cases(lim_complications) == T)
+
+#histogram of costs and outcomes
 
 ## The fitted model - National - Hospital Type
 lim_complications %>% 
