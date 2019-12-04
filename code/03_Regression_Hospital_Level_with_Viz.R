@@ -61,6 +61,8 @@ mod_hospital_complications <- lm(hospital_level_complications_score ~
 summary(mod_hospital_complications) 
 confint(mod_hospital_complications)
 
+View(master)
+
 summary(master$ip_spend); sd(na.omit(master$ip_spend)) #Median 11,482; sd 2,651.519
 hist(master$ip_spend)
 hist(log10(master$ip_spend))
@@ -96,6 +98,8 @@ lim_complications <- master %>%
 
 lim_complications <- lim_complications %>% filter(complete.cases(lim_complications) == T)
 
+#histogram of costs and outcomes
+
 ## The fitted model - National - Hospital Type
 lim_complications %>% 
   ggplot()+
@@ -125,22 +129,6 @@ lim_complications %>%
   geom_smooth(aes(ip_spend,fitted(mod_hospital_complications))) + 
   facet_wrap(. ~ region + hc_policy_focused_state)
 
-#Massachusetts vs TX
-lim_complications %>% filter(state == "MA" | state == "TX") %>%
-  ggplot()+
-  geom_point(aes(ip_spend,hospital_level_complications_score, color = income_cat), alpha = 0.6)+
-  geom_smooth(aes(ip_spend,hospital_level_complications_score)) +
-  #geom_line(aes(ip_spend,fitted(mod_hospital_complications)), color = "blue") + 
-  facet_wrap(. ~ state, ncol = 1)
-
-
-#Massachusetts vs TX
-lim_complications %>% filter(state == "CA" | state == "TX") %>%
-  ggplot()+
-  geom_point(aes(ip_spend,hospital_level_complications_score, color = state), alpha = 0.6)+
-  geom_smooth(aes(ip_spend,hospital_level_complications_score, fill = state)) 
-  #geom_line(aes(ip_spend,fitted(mod_hospital_complications)), color = "blue") + 
-  #facet_wrap(. ~ state, ncol = 1)
 
 
 #################################
@@ -157,6 +145,7 @@ mod_excess_readmit <- lm(excess_readmissions ~
                            hc_policy_focused_state+
                            hospital_density_per_100k_capita, data = master)
 summary(mod_excess_readmit)
+plot(mod_excess_readmit)
 
 confint(mod_excess_readmit)
 
@@ -174,7 +163,57 @@ master %>% ggplot()+
   facet_wrap(. ~ region + hc_policy_focused_state)
 
 
+
+
+mod_hac <- lm(responsiveness_of_hospital_staff_performance_rate ~
+                           total_spend+
+                           I(total_spend^2)+
+                           pop_with_healthinsurance+
+                           as.factor(income_cat)+
+                           perc_pop_below_poverty+
+                           region+
+                           hospital_ownership+
+                           hc_policy_focused_state+
+                           hospital_density_per_100k_capita, data = master)
+summary(mod_hac)
+plot(mod_hac)
+
+master %>% ggplot()+geom_point(aes(ip_spend,total_hac_score, color = hospital_ownership), alpha = 0.6) +
+  geom_smooth(aes(ip_spend,total_hac_score))
+
+
+
+master %>% ggplot()+geom_point(aes(total_spend,total_hac_score, color = hospital_ownership), alpha = 0.6) +
+  geom_smooth(aes(total_spend,total_hac_score))
+
+master %>% ggplot()+geom_point(aes(total_spend,excess_readmissions, color = hospital_ownership), alpha = 0.6) +
+  geom_smooth(aes(total_spend,excess_readmissions))
+
+master %>% ggplot()+geom_point(aes(total_spend,responsiveness_of_hospital_staff_performance_rate, color = hospital_ownership), alpha = 0.6) +
+  geom_smooth(aes(total_spend,responsiveness_of_hospital_staff_performance_rate))
+
+
+master %>% ggplot()+geom_point(aes(median_household_income,total_hac_score, color = hospital_ownership), alpha = 0.6) +
+  geom_smooth(aes(median_household_income,total_hac_score))
+
+master %>% ggplot()+geom_point(aes(median_household_income,excess_readmissions, color = hospital_ownership), alpha = 0.6) +
+  geom_smooth(aes(median_household_income,excess_readmissions))
+
+
+master %>% ggplot()+geom_point(aes(perc_pop_below_poverty,total_hac_score, color = hospital_ownership), alpha = 0.6) +
+  geom_smooth(aes(perc_pop_below_poverty,total_hac_score))
+
+master %>% ggplot()+geom_point(aes(perc_pop_below_poverty,excess_readmissions, color = hospital_ownership), alpha = 0.6) +
+  geom_smooth(aes(perc_pop_below_poverty,excess_readmissions))
+
+
+
+##########################################
+##########################################
 ##Visualize on the State Level
+##########################################
+##########################################
+
 state <- master %>%
   group_by(state) %>%
   summarize(region = max(na.omit(region)),
@@ -185,7 +224,8 @@ state <- master %>%
             hospital_level_complications_score = mean(na.omit(hospital_level_complications_score)),
             excess_readmissions = mean(na.omit(excess_readmissions)),
             hospital_density_per_100k_capita = mean(na.omit(hospital_density_per_100k_capita)),
-            income_cat = mean(na.omit(income_cat))
+            income_cat = mean(na.omit(as.numeric(income_cat))),
+            responsiveness_of_hospital_staff_performance_rate = mean(na.omit(responsiveness_of_hospital_staff_performance_rate)) 
   )
 
 
@@ -193,11 +233,28 @@ View(state)
 
 #State Level Viz
 state %>% ggplot() + 
-  geom_point(aes(ip_spend, hospital_level_complications_score, color = region, size = income_cat))
+  geom_point(aes(ip_spend, hospital_level_complications_score, color = region, size = income_cat), alpha = 0.7) +
+  geom_smooth(aes(ip_spend, hospital_level_complications_score))
 
 
 state %>% ggplot() + 
-  geom_point(aes(ip_spend, excess_readmissions, color = region, size = income_cat))
+  geom_point(aes(total_spend, excess_readmissions, color = region, size = income_cat)) + 
+  geom_smooth(aes(total_spend, excess_readmissions))
+
+
+state %>% ggplot() + 
+  geom_point(aes(total_spend, responsiveness_of_hospital_staff_performance_rate, color = region, size = income_cat)) + 
+  geom_smooth(aes(total_spend, responsiveness_of_hospital_staff_performance_rate))
+
+state %>% ggplot() + 
+  geom_point(aes(log(total_spend), excess_readmissions, color = region, size = income_cat)) + 
+  geom_smooth(aes(log(total_spend), excess_readmissions)) 
+
+state %>% ggplot() + 
+  geom_point(aes(total_spend, log(excess_readmissions), color = region, size = income_cat)) + 
+  geom_smooth(aes(total_spend, log(excess_readmissions)))
+
+
 
 plot(mod_hospital_complications)
 
