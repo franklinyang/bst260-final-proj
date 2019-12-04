@@ -65,7 +65,7 @@ ui <- fluidPage(
       "Other visualizations"
     ),
     tabPanel(
-      "Performance, Complication, Overall Scores by state",
+      "Measures segmented by state",
       sidebarLayout(
         sidebarPanel(
           radioButtons("measure", "Select outcome measure:", measure_options)
