@@ -44,7 +44,7 @@ Data were collected from a variety of sources.
 
 ## Exploratory Analysis: What visualizations did you use to look at your data in different ways? What are the different statistical methods you considered? Justify the decisions you made, and show any major changes to your ideas. How did you reach these conclusions?
 
-```{r}
+```{r, warning=F, message=F}
 ##########################################
 #Load Libraries
 ##########################################
@@ -56,6 +56,9 @@ library(tidyverse)
 library(ggplot2)
 library(ggthemes)
 library(knitr)
+library(sjPlot)
+library(sjmisc)
+library(sjlabelled)
 
 
 ##########################################
@@ -69,10 +72,10 @@ con <- dbConnect(RSQLite::SQLite(), "../database/db.sqlite")
 master <- dbFetch(dbSendQuery(con,"select * FROM master_hospital_table"))
 
 ## Set up Categorical Median Household Income by Quartile
-master$income_cat[master$median_household_income <= 46180.25] <- 1
-master$income_cat[master$median_household_income > 46180.25 & master$median_household_income <= 53626] <- 2
-master$income_cat[master$median_household_income > 53626 & master$median_household_income <= 62532] <- 3
-master$income_cat[master$median_household_income > 62532] <- 4
+master$income_cat[master$median_household_income <= 46000] <- 1
+master$income_cat[master$median_household_income > 46000 & master$median_household_income <= 53000] <- 2
+master$income_cat[master$median_household_income > 53000 & master$median_household_income <= 62500] <- 3
+master$income_cat[master$median_household_income > 62500] <- 4
 master$income_cat <- as.factor(master$income_cat)
 
 #Convert meaningful use into factor
@@ -90,7 +93,12 @@ summary(master$hospital_level_complications_score); sd(na.omit(master$hospital_l
 ```
 
 
-histograms, tables, naive regressions, a few scatterplots 
+
+
+histogram of teh cost variables; the outcome variables
+naive regressions (only one input)
+histogram of costs/outcomes stratifying by instrumental variable 
+perhaps a few scatterplots 
 
 ## Final Analysis
 
@@ -102,6 +110,8 @@ histograms, tables, naive regressions, a few scatterplots
 
 We analyzed the relationship between hospitals' postoperative complications in the inpatient setting, such as "Blood stream infection after surgery" and inpatient spending per claim. We used a linear least squares regression with a quadratic transformation on inpatient spending per claim to model this relationship. We adjusted for other significant factors, including hospital ownership (e.g., "Government - Federal" and "Government - Local"), whether the hospital offers emergency services, whether the hospital meets the criteria for for meaningful use of EHRs, the number of hospitals per capita in the surrounding county, socioeconomic factors of the surrounding county icluding median income, population, and the percentage of residents without health insurance, region, and whether the state is a "healthcare policy focused state" (i.e., Medicaid Expansion Instrumental Variable).
 
+
+#### Regression Model
 
 ```{r}
 ##########################################
@@ -122,14 +132,14 @@ mod_hospital_complications <- lm(hospital_level_complications_score ~
                                    meets_criteria_for_meaningful_use_of_ehrs+
                                    I(pop_no_healthinsurance/pop_denominator_healthinsurance),
                                  data = master)
-summary(mod_hospital_complications)
-
+tab_model(mod_hospital_complications)
+#summary(mod_hospital_complications)
 
 #Interpretation
-4.036e-04*11500-8.999e-09*11500^2+1.536e-05*11500 - (4.036e-04*9500-8.999e-09*9500^2+1.536e-05*9500) #0.459962 - HC focused
-(4.036e-04*11500-8.999e-09*11500^2+1.536e-05*11500 - (4.036e-04*9500-8.999e-09*9500^2+1.536e-05*9500))/(4.036e-04*9500-8.999e-09*9500^2+1.536e-05*9500) #14.5% - HC focused
-4.036e-04*11500-8.999e-09*11500^2 - (4.036e-04*9500-8.999e-09*9500^2) #0.429242 - not HC focused
-(4.036e-04*11500-8.999e-09*11500^2 - (4.036e-04*9500-8.999e-09*9500^2))/(4.036e-04*9500-8.999e-09*9500^2) #14.2% - not HC focused
+4.033e-04*11500-8.985e-09*11500^2+1.519e-05*11500 - (4.033e-04*9500-8.985e-09*9500^2+1.519e-05*9500) #0.45961 - HC focused
+(4.033e-04*11500-8.985e-09*11500^2+1.519e-05*11500 - (4.033e-04*9500-8.985e-09*9500^2+1.519e-05*9500))/(4.033e-04*9500-8.985e-09*9500^2+1.519e-05*9500) #14.5% - HC focused
+4.033e-04*11500-8.985e-09*11500^2 - (4.033e-04*9500-8.985e-09*9500^2) #0.42923 - not HC focused
+(4.033e-04*11500-8.985e-09*11500^2 - (4.033e-04*9500-8.985e-09*9500^2))/(4.033e-04*9500-8.985e-09*9500^2)  #14.2% - not HC focused
 ```
 
 
@@ -140,14 +150,18 @@ kable(confint(mod_hospital_complications))
 ```
 
 
+#### Interpretation
+
 All else being equal, a hospital in a state with a healthcare policy focus with an average IP spend per claim of \$11,500 has a postoverative complications score 14.5% higher than a hospital that spends $2k per claim less (14.2% in non-healthcare policy focused states).
 
+Of course, there is a reverse causation element to be considered here -- hospitals with lower quality (and usually higher costs) would tend to have more post-operative complications such as "Blood stream infection after surgery". Then, in turn, because of the complications, these hospitals will undoubtedly have higher costs. This creates a cycle of costs-and-complications. Note however that for the purposes of this analysis we were sure to include only complications that would reflect the hospital's quality, i.e. those that occurred post-operatively, and we excluded complications that may be reflective of extrinsic factors, such as "Death rate for heart failure patients".
 
+We noted that our healthcare policy focus IV does not have a significant effect on the outcomes and in fact appears to be harmful (14.5% vs 14.2%). We believe our instrument may not have been effective in this case because Medicare is a federally run program, so this shows that Medicare outcomes and spending is insensitive to state-level policy making differences, although it is *not* insensitive to regional socioeconomic/demographic differences, as seen by the region and county-level variables. We may expect to get different results if our analysis focused on a program that is run on a local level, such as Medicaid, the exchange, or a commercial plan.
+
+#### Visualization
 
 
 ```{r}
-
-
 ##########################################
 # Visualizations
 ##########################################
@@ -169,38 +183,49 @@ lim_complications <- master %>%
             state) 
 
 lim_complications <- lim_complications %>% filter(complete.cases(lim_complications) == T)
+lim_complications$hc_policy_focused_state[lim_complications$hc_policy_focused_state ==0] <- "Not Healthcare Policy Focused"
+lim_complications$hc_policy_focused_state[lim_complications$hc_policy_focused_state ==1] <- "Healthcare Policy Focused"
+levels(lim_complications$income_cat) <- c("< $46,000","$46,000 - $53,000","$53,000 - $62,500","> $62,500")
+```
 
-#histogram of costs and outcomes
 
+The graphs below demonstrate the results of the fitted model. Generally speaking, there is a quadratic effect between inpatient spend per claim and the postoperative complications score. Each region looks markedly different, likely due to demographic factors that were not accounted for in our census data. The relationship for hospitals in the northern and western states have a much higher slope than the southern states.
+
+```{r}
 ## The fitted model - National - Hospital Type
 lim_complications %>% 
   ggplot()+
-  geom_point(aes(ip_spend,hospital_level_complications_score, color = hospital_ownership), alpha = 0.7)+
-  geom_line(aes(ip_spend,fitted(mod_hospital_complications)), color = "blue") + 
-  facet_wrap(. ~ region + hc_policy_focused_state)
-
-#Smoothed Model - National - Hospital Type
-lim_complications %>% 
-  ggplot()+
-  geom_point(aes(ip_spend,hospital_level_complications_score, color = hospital_ownership), alpha = 0.7)+
-  geom_smooth(aes(ip_spend,fitted(mod_hospital_complications))) + 
-  facet_wrap(. ~ region + hc_policy_focused_state)
-
-
-## The fitted model - National - Income cat
-lim_complications %>% 
-  ggplot()+
+  #Scatter
   geom_point(aes(ip_spend,hospital_level_complications_score, color = income_cat), alpha = 0.7)+
+  #Fitted line
   geom_line(aes(ip_spend,fitted(mod_hospital_complications)), color = "blue") + 
-  facet_wrap(. ~ region + hc_policy_focused_state)
+  #Wrap
+  facet_wrap(. ~ region + hc_policy_focused_state)+ 
+  #Labels
+  theme(legend.position = "bottom") +
+  ylab("Postoperative Complications Score") +
+  xlab("Inpatient Spend per Claim") +
+  labs(color = "Income Category") +
+  ggtitle("Postoperative Complications Score vs Total Spend per Claim", subtitle = "Medicare Hospitals, 2017") 
+```
 
-#Smoothed Model - National - Income cat
+In Massachusetts specifically, the trend is almost perfectly linear, with higher inpatient spend associated with higher postoperative complications. Also note that the higher income counties tend to fall in the lower quadrant of this graph, with low percentage of the population uninsured, low postoperative complications, and low spend per claim. The upper right quadrant of the graph is dominated by hospitals residing in counties with a smaller median income and higher percentage uninsured. There are a few outliers with low postoperative complications and low inpatient spend per claim that are also low income. Investigation of these hospitals shows that they are all very close to one another in Hampden County, Massachusetts.
+
+```{r}
+## The fitted model - National - Hospital Type
 lim_complications %>% 
+  filter(state == "MA") %>%
   ggplot()+
-  geom_point(aes(ip_spend,hospital_level_complications_score, color = income_cat), alpha = 0.7)+
-  geom_smooth(aes(ip_spend,fitted(mod_hospital_complications))) + 
-  facet_wrap(. ~ region + hc_policy_focused_state)
-
+  #Scatter
+  geom_point(aes(ip_spend,hospital_level_complications_score, color = income_cat, size = perc_no_healthinsurance), alpha = 0.7)+
+  #Fitted line
+  geom_line(aes(ip_spend,fitted(mod_hospital_complications)[lim_complications$state == "MA"]), color = "blue") + 
+  #Labels
+  theme(legend.position = "right") +
+  ylab("Postoperative Complications Score") +
+  xlab("Inpatient Spend per Claim") +
+  labs(color = "Income Category", size = "Percent without Health Insurance") +
+  ggtitle("Postoperative Complications Score vs Total Spend per Claim - Massachusetts", subtitle = "Medicare Hospitals, 2017") 
 ```
 
 
@@ -209,8 +234,6 @@ lim_complications %>%
 
 
 
- All else being equal, a hospital in a state with a healthcare policy focus with an average IP spend per claim of \$11,500 has a postoverative complications score 14.5% higher than a hospital that spends $2k per claim less (14.2% in non-healthcare policy focused states).
- 
- The policy focused IV - would not make a difference necessarily because MCr is a federally run program and this shows that Medicare is insensitive to state-level policy making differences (although NOT insensitive to state-level socioeconomic/demographic differences, as seen by the region variable). This is a GOOD thing. We would expect it to be diff if we looked at MCD quality or commercial or exchange or non-federal.
+
 
 
