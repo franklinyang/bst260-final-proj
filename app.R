@@ -10,9 +10,9 @@ require(openintro)
 con <- dbConnect(RSQLite::SQLite(), "database/db.sqlite")
 
 measure_options = c("Readmissions" = "excess_readmissions",
-                    "Post-operative complications" = "hospital_level_complications_score",
+                    "Postoperative complications" = "hospital_level_complications_score",
                     "Responsiveness of hospital staff" = "responsiveness_of_hospital_staff_performance_rate",
-                    "In-patient spend" = "ip_spend",
+                    "Inpatient spend" = "ip_spend",
                     "Total spend" = "total_spend",
                     "Policy-focused state" = "hc_policy_focused_state",
                     "Hospital density" = "hospital_density_per_100k_capita",
@@ -72,16 +72,14 @@ state <- master %>%
   )
 
 state_measure_options = c(
-  "Readmissions" = "excess_readmissions",
-  "Responsiveness of hospital staff" = "responsiveness_of_hospital_staff_performance_rate"
+  "Responsiveness of hospital staff" = "responsiveness_of_hospital_staff_performance_rate",
+  "Postoperative Complications" = "hospital_level_complications_score",
+  "Excess Readmissions" = "excess_readmissions"
 )
 # Plotting performance score / complication score against total spend and segmenting by star rating
 ui <- fluidPage(
   titlePanel("BST260 Final Project Visualizations"),
   tabsetPanel(
-    tabPanel(
-      "Other visualizations"
-    ),
     tabPanel(
       "Measures segmented by state",
       sidebarLayout(
@@ -94,7 +92,7 @@ ui <- fluidPage(
       )
     ),
     tabPanel(
-      "Total spend as a function of measures",
+      "Total spend vs Outcome Measures",
       sidebarLayout(
         sidebarPanel(
           radioButtons("state_measure", "Select measure:", state_measure_options)
@@ -136,8 +134,14 @@ server <- function(input, output) {
   })
   output$facility_performance_plot <- renderPlot({
     state %>% ggplot() + 
-      geom_point(aes(!!as.symbol(input$state_measure), total_spend, color = region, size = income_cat)) +
-      geom_smooth(aes(!!as.symbol(input$state_measure), total_spend))
+      geom_point(aes(total_spend, !!as.symbol(input$state_measure), color = region, size = income_cat)) +
+      geom_smooth(aes(total_spend, !!as.symbol(input$state_measure)))+
+      #Labels
+      ylab("Outcome Measure") +
+      xlab("Total Spend per Claim") +
+      labs(size = "Income Category", color = "Region") +
+      ggtitle("Outcome Measures vs Total Spend per Claim", subtitle = "Medicare Hospitals, 2017") 
+      
   })
 }
 

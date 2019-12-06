@@ -206,7 +206,7 @@ lim_complications %>%
   ylab("Postoperative Complications Score") +
   xlab("Inpatient Spend per Claim") +
   labs(color = "Income Category") +
-  ggtitle("Postoperative Complications Score vs Total Spend per Claim", subtitle = "Medicare Hospitals, 2017") 
+  ggtitle("Postoperative Complications Score vs INpatient Spend per Claim", subtitle = "Medicare Hospitals, 2017") 
 ```
 
 In Massachusetts specifically, the trend is almost perfectly linear, with higher inpatient spend associated with higher postoperative complications. Also note that the higher income counties tend to fall in the lower quadrant of this graph, with low percentage of the population uninsured, low postoperative complications, and low spend per claim. The upper right quadrant of the graph is dominated by hospitals residing in counties with a smaller median income and higher percentage uninsured. There are a few outliers with low postoperative complications and low inpatient spend per claim that are also low income. Investigation of these hospitals shows that they are all very close to one another in Hampden County, Massachusetts.
