@@ -1,6 +1,4 @@
-layout: page
-title: Health Outcomes and Spending
----
+
 
 ## Background 
 
