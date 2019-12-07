@@ -1,5 +1,4 @@
-layout: page
-___
+Rachel Ketchum, Genevieve Lyons, Franklin Yang
 
 ## Background 
 
