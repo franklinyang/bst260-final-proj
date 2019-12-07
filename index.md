@@ -1,3 +1,4 @@
+layout: page
 title: Health Outcomes and Spending
 ---
 
