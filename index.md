@@ -30,11 +30,13 @@ The analyses to follow dig into the relationship between two outcome measures (P
 ## Takeaways
 
 ### Postoperative Complications vs. Total Spending
-|![Nationwide Complications](/images/complications.png)|![MA Complications](/images/complications_ma.png)|
+![Nationwide Complications](/images/complications.png) ![MA Complications](/images/complications_ma.png)
 * All else being equal, a hospital in a state with a healthcare policy focus with an average IP spend per claim of $11,500 has a postoperative complications score 14.5% higher than a hospital that spends $2k per claim less (14.2% in non-healthcare policy focused states).
 * We noted that a states who have Medicare Expansion programs do not necessarily have better outcomes. This relationship is not causal -- because Medicare is a federally run program we can only infer that Medicare outcomes and spending are insensitive to state-level policy making differences; however, it's possible that accounting for regional socioeconomic/demographic differences may drive different insights.
 
 ### Hospital Staff Responsiveness vs. Total Spending
+![Responsiveness by Emergency Y/N](/images/responsiveness_emergency.png) ![Responsiveness by Density](/images/responsiveness_density.png) ![MA Responsiveness](/images/responsiveness_ma.png)
+
 * All else being equal, a hospital with an average total spend per claim of $11,500 has a Responsiveness of Hospital Staff score 15.1% lower than a hospital that spends $2k per claim less.
 * On average, a hospital in a county with a given hospital density per capita (100,000 residents) had a responsiveness score that was 0.93 points higher than a hospital in a county with one less hospital per capita (100,000 residents). This makes intuitive sense, because the more hospitals serving a population, the faster the service.
 * On average, a hospital with emergency services had a responsiveness score that was 1.97 points lower than a hospital without emergency services. This is likely because of the long lines that result from emergency care. There are two contributing factors: 1) patients who seek non-emergency care may be deprioritized compared to emergency cases, and 2) patients who need emergency care are likely to be more disgruntled about any delay and may tend to score a hospital’s responsiveness lower.
