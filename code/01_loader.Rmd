@@ -24,7 +24,7 @@ library(DBI)
 # for testing
 # con <- dbConnect(RSQLite::SQLite(), ":memory:")
 
-con <- dbConnect(RSQLite::SQLite(), "../database/db.sqlite")
+con <- dbConnect(RSQLite::SQLite(), "./database/db.sqlite")
 
 ### Load Hospital Info
   #Pull Data
@@ -129,7 +129,7 @@ names(outcomes_acs_measures) <- gsub("\\.", "_", names(outcomes_acs_measures))
 
 # https://data.medicare.gov/Hospital-Compare/Hospital-Value-Based-Purchasing-HVBP-Patient-Exper/avtz-f2ge
 outcomes_pt_experience_scores <- read.csv(
-  file="../data/outcomes/hospital_value-based_purchasing__hvbp____patient_experience_of_care_domain_scores__hcahps_.csv",
+  file="../data/outcomes/patient_experience_of_care_domain_scores__hcahps_.csv",
   header=TRUE,
   sep=",",
   colClasses = c("character", "character", "character", "character", "character", "character", "character",

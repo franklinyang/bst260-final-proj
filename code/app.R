@@ -7,7 +7,7 @@ require(viridis)
 require(openintro)
 
 # Begin connection
-con <- dbConnect(RSQLite::SQLite(), "../database/db.sqlite")
+con <- dbConnect(RSQLite::SQLite(), "./database/db.sqlite")
 
 #Pull master table
 master <- dbFetch(dbSendQuery(con,"select * FROM master_hospital_table"))
