@@ -1,3 +1,6 @@
+title: Health Outcomes and Spending
+---
+
 ## Background 
 
 As the US is making greater strides towards a value based care system, it will become critical to understand the relationship between better outcomes and cost efficiency. When compared to other similar countries, the [US currently spends far more and has worse health outcomes](http://www.oecd.org/els/health-systems/Health-at-a-Glance-2013.pdf).
