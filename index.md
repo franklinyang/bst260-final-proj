@@ -21,7 +21,8 @@ The purpose of this project is to understand:
 
 ### Data Collection and Cleaning process
 
-The Center for Medicare and Medicaid Services (CMS) publishes costs and outcomes datasets each year. These datasets are structured as CSV files. The team ingested these CSV files into a SQL database and, in the process, set appropriate column names and definitions in the database schema. All analyses conducted were done using a denormalized analysis table that was created.
+The Center for 
+and Medicaid Services (CMS) publishes costs and outcomes datasets each year. These datasets are structured as CSV files. The team ingested these CSV files into a SQL database and, in the process, set appropriate column names and definitions in the database schema. All analyses conducted were done using a denormalized analysis table that was created.
 
 ![Data Map](/images/Data Map.jpeg)
 
@@ -34,7 +35,7 @@ The analyses to follow dig into the relationship between two outcome measures (P
 ### Postoperative Complications vs. Total Spending
 ![Nationwide Complications](/images/complications.png) ![MA Complications](/images/complications_ma.png)
 * All else being equal, a hospital in a state with a healthcare policy focus with an average IP spend per claim of $11,500 has a postoperative complications score 14.5% higher than a hospital that spends $2k per claim less (14.2% in non-healthcare policy focused states).
-* We noted that a states who have Medicare Expansion programs do not necessarily have better outcomes. This relationship is not causal -- because Medicare is a federally run program we can only infer that Medicare outcomes and spending are insensitive to state-level policy making differences; however, it's possible that accounting for regional socioeconomic/demographic differences may drive different insights.
+* We noted that a states who have Medicaid Expansion programs do not necessarily have better outcomes. This relationship is not causal -- because Medicaid is a federally run program we can only infer that Medicaid outcomes and spending are insensitive to state-level policy making differences; however, it's possible that accounting for regional socioeconomic/demographic differences may drive different insights.
 
 ### Hospital Staff Responsiveness vs. Total Spending
 ![Responsiveness by Emergency Y/N](/images/responsiveness_emergency.png) ![Responsiveness by Density](/images/responsiveness_density.png) ![MA Responsiveness](/images/responsiveness_ma.png)
