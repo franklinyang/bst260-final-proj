@@ -1,3 +1,6 @@
+## Explorations in Measures vs. Total Spending
+<iframe id="shiny-app" src="https://franklinyang.shinyapps.io/code/" style="border: none; width: 100%; height: 850px" frameborder="0"></iframe>
+
 ## Background 
 
 As the US is making greater strides towards a value based care system, it will become critical to understand the relationship between better outcomes and cost efficiency. When compared to other similar countries, the [US currently spends far more and has worse health outcomes](http://www.oecd.org/els/health-systems/Health-at-a-Glance-2013.pdf).
@@ -40,5 +43,3 @@ The analyses to follow dig into the relationship between two outcome measures (P
 * All else being equal, a hospital with an average total spend per claim of $11,500 has a Responsiveness of Hospital Staff score 15.1% lower than a hospital that spends $2k per claim less.
 * On average, a hospital in a county with a given hospital density per capita (100,000 residents) had a responsiveness score that was 0.93 points higher than a hospital in a county with one less hospital per capita (100,000 residents). This makes intuitive sense, because the more hospitals serving a population, the faster the service.
 * On average, a hospital with emergency services had a responsiveness score that was 1.97 points lower than a hospital without emergency services. This is likely because of the long lines that result from emergency care. There are two contributing factors: 1) patients who seek non-emergency care may be deprioritized compared to emergency cases, and 2) patients who need emergency care are likely to be more disgruntled about any delay and may tend to score a hospital’s responsiveness lower.
-
-<iframe id="shiny-app" src="https://franklinyang.shinyapps.io/code/" style="border: none; width: 100%; height: 850px" frameborder="0"></iframe>
