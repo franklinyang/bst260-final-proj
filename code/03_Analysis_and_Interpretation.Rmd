@@ -39,7 +39,7 @@ Data were collected from a variety of sources.
 
 #### gen can write this ####
 
-![Data Map](../images/Data Map.jpeg)
+![Data Map](../images/Data_Map.jpeg)
 
 
 ## Exploratory Analysis: What visualizations did you use to look at your data in different ways? What are the different statistical methods you considered? Justify the decisions you made, and show any major changes to your ideas. How did you reach these conclusions?
