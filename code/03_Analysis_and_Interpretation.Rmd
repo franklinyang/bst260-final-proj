@@ -35,14 +35,44 @@ Finally, to explore the relationship between outcomes and healthcare policy focu
 
 ## Data Collection
 
-Data were collected from a variety of sources.
+### Key Data Sources: 
 
-#### gen can write this ####
+The Center for Medicare and Medicaid Services (CMS) publishes costs and outcomes datasets related to Medicare claims at acute care hospitals each year in the [CMS Hospital Compare Datasets](https://data.medicare.gov/data/hospital-compare). These datasets are structured as CSV files.
+
+The [US Census Bureau](https://www.census.gov/data.html) publishes data related to socio-economic factors by county. 
+
+Medicaid Expansion has been used as in Instrumental Variable to model states that prioritize healthcare in their policymaking. 
+
+All data was ingested into a SQLite relational database and then combined. All analyses conducted were done using a denormalized analysis table that was created. 
+
+### Key Data Elements and Data Documentation
+
+Data Elements Collected at the Hospital Level:
+
+* [Postoperative Complications Score](https://data.medicare.gov/Hospital-Compare/Complications-and-Deaths-Hospital/ynj2-r877) - Complications and deaths scores for Medicare hospital claims, including only complications and deaths that occurred postoperatively.
+* [Patient Experience Measure: Responsiveness of Hospital Staff](https://data.medicare.gov/Hospital-Compare/Hospital-Value-Based-Purchasing-HVBP-Patient-Exper/avtz-f2ge) - Patient Experience of Care Domain Scores for Responsiveness of Hospital Staff (Hospital Value-Based Purchasing Program)
+* [Inpatient and Total Spend per Claim](https://data.medicare.gov/Hospital-Compare/Medicare-Hospital-Spending-by-Claim/nrth-mfg3) - average spending levels during hospitals’ Medicare Spending per Beneficiary (MSPB) episodes for inpatient and all claims (respectively). These represent price-standardized, non-risk-adjusted values. An MSPB episode includes all Medicare Part A and Part B claims paid during the period from 3 days prior to an inpatient hospital admission through 30 days after discharge. 
+* [Hospital Ownership](https://data.medicare.gov/Hospital-Compare/Hospital-General-Information/xubh-q36u) - Hospital ownership, such as Proprietary, Voluntary Non-Profit - Private, Government - Local, etc.
+* Hospital Density per 100,000 Residents - Calculated as the number of hospitals in the county per 100,000 residents in that county.
+* [Emergency Services](https://data.medicare.gov/Hospital-Compare/Hospital-General-Information/xubh-q36u) - Indicates presence of emergency services at a hospital.
+* [Meets Criteria for Meaningful Use of EHRs](https://data.medicare.gov/Hospital-Compare/Hospital-General-Information/xubh-q36u) - Indicates if is using certified EHR technology in a [meaningful manner to improve care](https://www.cdc.gov/ehrmeaningfuluse/introduction.html).
+
+Data Elements Collected at the County Level:
+
+* Income Category - Median household income in the county. Defined as < \$46,000, \$46,000 - \$53,000, \$53,000 - \$62,500, and > \$62,500
+* Population - Population of the county.
+* Region - Northeast, North Central, South, and West
+* Percent Uninsured - Calculated as the population without health insurance in the county divided by the population in the county.
+
+Data Elements Collected at the State Level:
+
+* Healthcare policy focused state - Medicaid Expansion has been used as in Instrumental Variable to model states that prioritize healthcare in their policymaking.
+
 
 ![Data Map](../images/Data_Map.jpeg)
 
 
-## Exploratory Analysis: What visualizations did you use to look at your data in different ways? What are the different statistical methods you considered? Justify the decisions you made, and show any major changes to your ideas. How did you reach these conclusions?
+## Exploratory Analysis
 
 ```{r, warning=F, message=F}
 ##########################################
@@ -94,7 +124,7 @@ summary(master$hospital_level_complications_score); sd(na.omit(master$hospital_l
 
 
 
-
+What visualizations did you use to look at your data in different ways? What are the different statistical methods you considered? Justify the decisions you made, and show any major changes to your ideas. How did you reach these conclusions?
 histogram of the cost variables; the outcome variables
 naive regressions (only one input)
 histogram of costs/outcomes stratifying by instrumental variable 
@@ -102,9 +132,9 @@ perhaps a few scatter plots
 
 ## Final Analysis
 
-
 ### State Comparison Tool 
 
+`app.R` contains a tool that will allow you to compare states. Using this tool, it is easy to dig into the relationship between  outcome measures and costs. 
 
 ### Association between Postoperative Complications and Costs 
 
