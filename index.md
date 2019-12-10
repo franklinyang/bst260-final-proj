@@ -54,7 +54,7 @@ Data Elements Collected at the State Level:
 * Healthcare policy focused state - Medicaid Expansion has been used as in Instrumental Variable to model states that prioritize healthcare in their policymaking.
 
 
-![Data Map](../images/Data_Map.jpeg)
+![Data Map](/images/Data_Map.jpeg)
 
 ## Data Analysis Methodologies
 
