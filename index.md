@@ -58,9 +58,13 @@ Data Elements Collected at the State Level:
 
 ## Data Analysis Methodologies
 
-Using this tool, it is easy to dig into the relationship between  outcome measures and costs:
+We first analyzed the data at the state-level to identify high level trends in Medicare spending and outcomes. Using this tool, it is easy to dig into the relationship between  outcome measures and costs:
 
 <iframe id="shiny-app" src="https://franklinyang.shinyapps.io/code/" style="border: none; width: 100%; height: 850px" frameborder="0"></iframe>
+
+We note that, when examining postoperative complications by state, there are three outliers with high complications rates: North Dakota, Nebraska, and Colorado. When viewing the hospital staff responsiveness by state, there is a lot of state-level variation in the way patients are rating the staff responsiveness of a hospital. The trend isn’t so clear.
+
+However, when viewing the data as presented on the second tab, we can compare hospital staff responsiveness compared to the total spend per claim, and we see a definite trend -- as fee-for-service spending increases, the patient experience suffers. There are similar results for the postoperative complications -- complications increase with spending.
 
 The analyses to follow dig into the relationship between two outcome measures (Postoperative Complications and Responsiveness of Hospital Staff) and Costs. For each outcome measure, we do regressions, confidence interval estimates, segment by covariates, and visualize.
 
@@ -96,7 +100,7 @@ We used a linear least squares regression with a quadratic transformation on tot
 
 The regression results for hospital staff responsiveness are:
 
-![Postoperative Regression Results](/images/regression_results_responsiveness.png)
+![Responsiveness Regression Results](/images/regression_results_responsiveness.png)
 
 All else being equal, a hospital with an average total spend per claim of \$11,500 has a Responsiveness of Hospital Staff score 15.1% lower than a hospital that spends $2k per claim less. This makes intuitive sense because the fee-for-service payment scheme encourages a "quantity over quality" approach to care. Over-testing and providing more services than necessary yields a higher cost per claim, but does not increase patient satisfaction -- in fact, most patients don't enjoy being exposed to more tests/services than are necessary. This analysis, unlike the prior analysis, does not suffer from potential reverse causation, although it is possible that there are other confounding factors that have not been accounted for here.
 
