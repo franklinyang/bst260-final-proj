@@ -1,6 +1,6 @@
 #########################
 # Create Hospital Level Regression Master Table
-# Created by: Genevieve Lyons
+# Created by: Genevieve Lyons, Franklin Yang, Rachel Ketchum
 # Created date: 11/19/2019
 # Goal: Create a Hospital-Level Master Table, limited to Acute Care Hospitals containing the following variables:
     #Facility ID

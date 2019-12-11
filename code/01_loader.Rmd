@@ -1,6 +1,6 @@
 ---
 title: "load_data"
-author: "Franklin Yang"
+author: "Franklin Yang, Genevieve Lyons, Rachel Ketchum"
 date: "11/6/2019"
 output: html_document
 ---
