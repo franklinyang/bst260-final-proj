@@ -1,4 +1,5 @@
-Rachel Ketchum, Genevieve Lyons, Franklin Yang
+# Quality vs Quantity: A Medicare Story
+### Rachel Ketchum, Genevieve Lyons, Franklin Yang
 
 ## Background 
 
@@ -17,25 +18,64 @@ The purpose of this project is to understand:
 2. The association between costs and outcomes across individual hospitals.
 3. The relationship between healthcare policy focused states and outcomes.
 
-## Data Collection and Data Analysis Methodologies
+## Data Collection and Cleaning Process
 
-### Data Collection and Cleaning process
+### Key Data Sources: 
 
-The Center for 
-and Medicaid Services (CMS) publishes costs and outcomes datasets each year. These datasets are structured as CSV files. The team ingested these CSV files into a SQL database and, in the process, set appropriate column names and definitions in the database schema. All analyses conducted were done using a denormalized analysis table that was created.
+The Center for Medicare and Medicaid Services (CMS) publishes costs and outcomes datasets related to Medicare claims at acute care hospitals each year in the [CMS Hospital Compare Datasets](https://data.medicare.gov/data/hospital-compare). These datasets are structured as CSV files.
 
-![Data Map](/images/Data Map.jpeg)
+The [US Census Bureau](https://www.census.gov/data.html) publishes data related to socio-economic factors by county. 
 
-### Data Analysis Methodologies
+Medicaid Expansion has been used as in Instrumental Variable to model states that prioritize healthcare in their policymaking. 
+
+All data was ingested into a SQLite relational database and then combined. All analyses conducted were done using a denormalized analysis table that was created. 
+
+### Key Data Elements and Data Documentation
+
+Data Elements Collected at the Hospital Level:
+
+* [Postoperative Complications Score](https://data.medicare.gov/Hospital-Compare/Complications-and-Deaths-Hospital/ynj2-r877) - Complications and deaths scores for Medicare hospital claims, including only complications and deaths that occurred postoperatively.
+* [Patient Experience Measure: Responsiveness of Hospital Staff](https://data.medicare.gov/Hospital-Compare/Hospital-Value-Based-Purchasing-HVBP-Patient-Exper/avtz-f2ge) - Patient Experience of Care Domain Scores for Responsiveness of Hospital Staff (Hospital Value-Based Purchasing Program)
+* [Inpatient and Total Spend per Claim](https://data.medicare.gov/Hospital-Compare/Medicare-Hospital-Spending-by-Claim/nrth-mfg3) - average spending levels during hospitals’ Medicare Spending per Beneficiary (MSPB) episodes for inpatient and all claims (respectively). These represent price-standardized, non-risk-adjusted values. An MSPB episode includes all Medicare Part A and Part B claims paid during the period from 3 days prior to an inpatient hospital admission through 30 days after discharge. 
+* [Hospital Ownership](https://data.medicare.gov/Hospital-Compare/Hospital-General-Information/xubh-q36u) - Hospital ownership, such as Proprietary, Voluntary Non-Profit - Private, Government - Local, etc.
+* Hospital Density per 100,000 Residents - Calculated as the number of hospitals in the county per 100,000 residents in that county.
+* [Emergency Services](https://data.medicare.gov/Hospital-Compare/Hospital-General-Information/xubh-q36u) - Indicates presence of emergency services at a hospital.
+* [Meets Criteria for Meaningful Use of EHRs](https://data.medicare.gov/Hospital-Compare/Hospital-General-Information/xubh-q36u) - Indicates if is using certified EHR technology in a [meaningful manner to improve care](https://www.cdc.gov/ehrmeaningfuluse/introduction.html).
+
+Data Elements Collected at the County Level:
+
+* Income Category - Median household income in the county. Defined as < \$46,000, \$46,000 - \$53,000, \$53,000 - \$62,500, and > \$62,500
+* Population - Population of the county.
+* Region - Northeast, North Central, South, and West
+* Percent Uninsured - Calculated as the population without health insurance in the county divided by the population in the county.
+
+Data Elements Collected at the State Level:
+
+* Healthcare policy focused state - Medicaid Expansion has been used as in Instrumental Variable to model states that prioritize healthcare in their policymaking.
+
+
+![Data Map](/images/Data_Map.jpeg)
+
+## Data Analysis Methodologies
+
+Using this tool, it is easy to dig into the relationship between  outcome measures and costs:
+
 <iframe id="shiny-app" src="https://franklinyang.shinyapps.io/code/" style="border: none; width: 100%; height: 850px" frameborder="0"></iframe>
-The analyses to follow dig into the relationship between two outcome measures (Postoperative Complications and Responsiveness of Hospital Staff) and Costs. Outcome measures were selected by plotting different outcome measures against cost, and attempting to dig into measures with interesting linear or non-linear relationships. For each outcome measure, we do regressions, confidence interval estimates, segment by covariates, and visualize.
+
+The analyses to follow dig into the relationship between two outcome measures (Postoperative Complications and Responsiveness of Hospital Staff) and Costs. For each outcome measure, we do regressions, confidence interval estimates, segment by covariates, and visualize.
 
 ## Takeaways
 
 ### Postoperative Complications vs. Total Spending
+
+We analyzed the relationship between hospitals' postoperative complications in the inpatient setting, such as "Blood stream infection after surgery" and inpatient spending per claim. We used a linear least squares regression with a quadratic transformation on inpatient spending per claim to model this relationship. We adjusted for other significant factors, including hospital ownership (e.g., "Government - Federal" and "Government - Local"), whether the hospital offers emergency services, whether the hospital meets the criteria for for meaningful use of EHRs, the number of hospitals per capita in the surrounding county, socioeconomic factors of the surrounding county including median income, population, and the percentage of residents without health insurance, region, and whether the state is a "healthcare policy focused state" (i.e., Medicaid Expansion Instrumental Variable).
+
+The regression results are:
+![Postoperative Regression Results](/images/regression_results_postoperative complications.png)
+
 ![Nationwide Complications](/images/complications.png) ![MA Complications](/images/complications_ma.png)
-* All else being equal, a hospital in a state with a healthcare policy focus with an average IP spend per claim of $11,500 has a postoperative complications score 14.5% higher than a hospital that spends $2k per claim less (14.2% in non-healthcare policy focused states).
-* We noted that a states who have Medicaid Expansion programs do not necessarily have better outcomes. This relationship is not causal -- because Medicaid is a federally run program we can only infer that Medicaid outcomes and spending are insensitive to state-level policy making differences; however, it's possible that accounting for regional socioeconomic/demographic differences may drive different insights.
+
+
 
 ### Hospital Staff Responsiveness vs. Total Spending
 ![Responsiveness by Emergency Y/N](/images/responsiveness_emergency.png) ![Responsiveness by Density](/images/responsiveness_density.png) ![MA Responsiveness](/images/responsiveness_ma.png)
