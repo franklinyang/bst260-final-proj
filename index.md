@@ -1,6 +1,12 @@
 # Quality vs Quantity: A Medicare Story
 ### Rachel Ketchum, Genevieve Lyons, Franklin Yang
 
+## Table of Contents
+1. [Background](##Background)
+2. [Purpose](##Purpose)
+3. [Data Collection and Cleaning Process](##Data Collection and Cleaning Process)
+
+
 ## Background 
 
 As the US is making greater strides towards a value based care system, it will become critical to understand the relationship between better outcomes and cost efficiency. When compared to other similar countries, the [US currently spends far more and has worse health outcomes](http://www.oecd.org/els/health-systems/Health-at-a-Glance-2013.pdf).
