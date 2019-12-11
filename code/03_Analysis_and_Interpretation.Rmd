@@ -134,7 +134,13 @@ perhaps a few scatter plots
 
 ### State Comparison Tool 
 
-`app.R` contains a tool that will allow you to compare states. Using this tool, it is easy to dig into the relationship between  outcome measures and costs. 
+We first analyzed the data at the state-level to identify high level trends in Medicare spending and outcomes. `app.R` contains a tool that will allow you to compare states. Using this tool, it is easy to dig into the relationship between  outcome measures and costs. 
+
+We note that, when examining postoperative complications by state, there are three outliers with high complications rates: North Dakota, Nebraska, and Colorado. When viewing the hospital staff responsiveness by state, there is a lot of state-level variation in the way patients are rating the staff responsiveness of a hospital. The trend isn’t so clear.
+
+However, when viewing the data as presented on the second tab, we can compare hospital staff responsiveness compared to the total spend per claim, and we see a definite trend -- as fee-for-service spending increases, the patient experience suffers. There are similar results for the postoperative complications -- complications increase with spending.
+
+The analyses to follow dig into the relationship between two outcome measures (Postoperative Complications and Responsiveness of Hospital Staff) and Costs. For each outcome measure, we do regressions, confidence interval estimates, segment by covariates, and visualize.
 
 ### Association between Postoperative Complications and Costs 
 
