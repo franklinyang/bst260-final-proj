@@ -1,5 +1,6 @@
 # Quality vs Quantity: A Medicare Story
 ## Rachel Ketchum, Genevieve Lyons, Franklin Yang
+## View our [website](https://franklinyang.github.io/bst260-final-proj/)
 
 
 ### Background
