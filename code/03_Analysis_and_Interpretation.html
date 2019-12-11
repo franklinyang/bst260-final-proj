@@ -447,7 +447,7 @@ library(sjlabelled)
 ##########################################
 
 #setwd(&quot;/Users/genevievelyons/Intro to DS/bst260-final-proj/code&quot;)
-con &lt;- dbConnect(RSQLite::SQLite(), &quot;../database/db.sqlite&quot;)
+con &lt;- dbConnect(RSQLite::SQLite(), &quot;./database/db.sqlite&quot;)
 
 master &lt;- dbFetch(dbSendQuery(con,&quot;select * FROM master_hospital_table&quot;))
 
@@ -478,7 +478,10 @@ master$meets_criteria_for_meaningful_use_of_ehrs &lt;- as.factor(master$meets_cr
 <h2>Final Analysis</h2>
 <div id="state-comparison-tool" class="section level3">
 <h3>State Comparison Tool</h3>
-<p><code>app.R</code> contains a tool that will allow you to compare states. Using this tool, it is easy to dig into the relationship between outcome measures and costs.</p>
+<p>We first analyzed the data at the state-level to identify high level trends in Medicare spending and outcomes. <code>app.R</code> contains a tool that will allow you to compare states. Using this tool, it is easy to dig into the relationship between outcome measures and costs.</p>
+<p>We note that, when examining postoperative complications by state, there are three outliers with high complications rates: North Dakota, Nebraska, and Colorado. When viewing the hospital staff responsiveness by state, there is a lot of state-level variation in the way patients are rating the staff responsiveness of a hospital. The trend isn’t so clear.</p>
+<p>However, when viewing the data as presented on the second tab, we can compare hospital staff responsiveness compared to the total spend per claim, and we see a definite trend – as fee-for-service spending increases, the patient experience suffers. There are similar results for the postoperative complications – complications increase with spending.</p>
+<p>The analyses to follow dig into the relationship between two outcome measures (Postoperative Complications and Responsiveness of Hospital Staff) and Costs. For each outcome measure, we do regressions, confidence interval estimates, segment by covariates, and visualize.</p>
 </div>
 <div id="association-between-postoperative-complications-and-costs" class="section level3">
 <h3>Association between Postoperative Complications and Costs</h3>
