@@ -5,6 +5,9 @@
 1. [Background](#Background)
 2. [Purpose](#Purpose)
 3. [Data Collection and Cleaning Process](#Data Collection and Cleaning Process)
+4. [Data Analysis Methodologies](#Data Analysis Methodologies)
+5. [Takeaways](#Takeaways)
+6. [Conclusions and Next Steps](#Conclusions and Next Steps)
 
 
 ## Background 
