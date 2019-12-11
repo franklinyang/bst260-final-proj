@@ -17,10 +17,10 @@ Using Medicare as a paradigm, we have examined the relationship between spending
 
 * The main results of our analysis, including the screencast, is available in our [website](https://franklinyang.github.io/bst260-final-proj/).
 * The `data` folder contains all raw data, which has been aggregated and analyzed from [CMS Hospital Compare Datasets](https://data.medicare.gov/data/hospital-compare) and the [US Census Bureau](https://www.census.gov/data.html).
-* The `database` folder contains the SQLite database used to manage, aggregate, and analyze the data.
 * The `images` folder contains images used in the website.
 * The `code` folder contains all code used to load, wrangle, and analyze the data. These files must be run sequentially:
-1) `01_loader.Rmd` creates the SQLite database and loads the data in our relational file structure.
-2) `02_Regression_Master_Table_Build.R` combines and wrangles the data into a usable format for analysis.
-3) `03_Analysis_and_Interpretation.Rmd` and `03_Analysis_and_Interpretation.html` contain the results and main takeaways of our analyses.
-4) `app.R` contains an interactive tool to compare state-level quality and spending metrics. 
+1) The `database` folder contains the SQLite database used to manage, aggregate, and analyze the data.
+2) `01_loader.Rmd` creates the SQLite database and loads the data in our relational file structure.
+3) `02_Regression_Master_Table_Build.R` combines and wrangles the data into a usable format for analysis.
+4) `03_Analysis_and_Interpretation.Rmd` and `03_Analysis_and_Interpretation.html` contain the results and main takeaways of our analyses.
+5) `app.R` contains an interactive tool to compare state-level quality and spending metrics. 
