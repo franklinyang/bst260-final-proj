@@ -75,7 +75,7 @@ The analyses to follow dig into the relationship between two outcome measures (P
 We analyzed the relationship between hospitals' postoperative complications in the inpatient setting, such as "Blood stream infection after surgery" and inpatient spending per claim. We used a linear least squares regression with a quadratic transformation on inpatient spending per claim to model this relationship. We adjusted for other significant factors, including hospital ownership (e.g., "Government - Federal" and "Government - Local"), whether the hospital offers emergency services, whether the hospital meets the criteria for for meaningful use of EHRs, the number of hospitals per capita in the surrounding county, socioeconomic factors of the surrounding county including median income, population, and the percentage of residents without health insurance, region, and whether the state is a "healthcare policy focused state" (i.e., Medicaid Expansion Instrumental Variable).
 
 The regression results for postoperative complications are:
-![Postoperative Regression Results](/images/regression_results_postoperative complications.png)
+![Postoperative Regression Results](/images/regression_results_postoperative_complications.png)
 
 All else being equal, a hospital in a state with a healthcare policy focus with an average IP spend per claim of \$11,500 has a postoperative complications score 14.5% higher than a hospital that spends $2k per claim less (14.2% in non-healthcare policy focused states).
 
