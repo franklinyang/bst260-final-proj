@@ -53,8 +53,8 @@ Data Elements Collected at the State Level:
 
 * Healthcare policy focused state - Medicaid Expansion has been used as in Instrumental Variable to model states that prioritize healthcare in their policymaking.
 
-
 ![Data Map](/images/Data_Map.jpeg)
+
 
 ## Data Analysis Methodologies
 
@@ -70,16 +70,58 @@ The analyses to follow dig into the relationship between two outcome measures (P
 
 We analyzed the relationship between hospitals' postoperative complications in the inpatient setting, such as "Blood stream infection after surgery" and inpatient spending per claim. We used a linear least squares regression with a quadratic transformation on inpatient spending per claim to model this relationship. We adjusted for other significant factors, including hospital ownership (e.g., "Government - Federal" and "Government - Local"), whether the hospital offers emergency services, whether the hospital meets the criteria for for meaningful use of EHRs, the number of hospitals per capita in the surrounding county, socioeconomic factors of the surrounding county including median income, population, and the percentage of residents without health insurance, region, and whether the state is a "healthcare policy focused state" (i.e., Medicaid Expansion Instrumental Variable).
 
-The regression results are:
+The regression results for postoperative complications are:
 ![Postoperative Regression Results](/images/regression_results_postoperative complications.png)
 
-![Nationwide Complications](/images/complications.png) ![MA Complications](/images/complications_ma.png)
+All else being equal, a hospital in a state with a healthcare policy focus with an average IP spend per claim of \$11,500 has a postoperative complications score 14.5% higher than a hospital that spends $2k per claim less (14.2% in non-healthcare policy focused states).
 
+Of course, there is a reverse causation element to be considered here -- hospitals with lower quality (and usually higher costs) would tend to have more post-operative complications such as "Blood stream infection after surgery". Then, in turn, because of the complications, these hospitals will undoubtedly have higher costs. This creates a cycle of costs-and-complications. Note however that for the purposes of this analysis we were sure to include only complications that would reflect the hospital's quality, i.e. those that occurred post-operatively, and we excluded complications that may be reflective of extrinsic factors, such as "Death rate for heart failure patients".
+
+We noted that our healthcare policy focus IV does not have a significant effect on the outcomes and in fact appears to be harmful (14.5% vs 14.2%). We believe our instrument may not have been effective in this case because Medicare is a federally run program, so this shows that Medicare outcomes and spending is insensitive to state-level policy making differences, although it is *not* insensitive to regional socioeconomic/demographic differences, as seen by the region and county-level variables. We may expect to get different results if our analysis focused on a program that is run on a local level, such as Medicaid, the exchange, or a commercial plan.
+
+The graphs below demonstrate the results of the fitted model. Generally speaking, there is a quadratic effect between inpatient spend per claim and the postoperative complications score. Each region looks markedly different, likely due to demographic factors that were not accounted for in our census data. The relationship for hospitals in the northern and western states have a much higher slope than the southern states.
+
+![Nationwide Complications](/images/complications.png) 
+
+In Massachusetts specifically, the trend is almost perfectly linear, with higher inpatient spend associated with higher postoperative complications. Also note that the higher income counties tend to fall in the lower quadrant of this graph, with low percentage of the population uninsured, low postoperative complications, and low spend per claim. The upper right quadrant of the graph is dominated by hospitals residing in counties with a smaller median income and higher percentage uninsured. There are a few outliers with low postoperative complications and low inpatient spend per claim that are also low income. Investigation of these hospitals shows that they are all very close to one another in Springfield, Massachusetts.
+
+![MA Complications](/images/complications_ma.png)
 
 
 ### Hospital Staff Responsiveness vs. Total Spending
-![Responsiveness by Emergency Y/N](/images/responsiveness_emergency.png) ![Responsiveness by Density](/images/responsiveness_density.png) ![MA Responsiveness](/images/responsiveness_ma.png)
 
-* All else being equal, a hospital with an average total spend per claim of $11,500 has a Responsiveness of Hospital Staff score 15.1% lower than a hospital that spends $2k per claim less.
-* On average, a hospital in a county with a given hospital density per capita (100,000 residents) had a responsiveness score that was 0.93 points higher than a hospital in a county with one less hospital per capita (100,000 residents). This makes intuitive sense, because the more hospitals serving a population, the faster the service.
-* On average, a hospital with emergency services had a responsiveness score that was 1.97 points lower than a hospital without emergency services. This is likely because of the long lines that result from emergency care. There are two contributing factors: 1) patients who seek non-emergency care may be deprioritized compared to emergency cases, and 2) patients who need emergency care are likely to be more disgruntled about any delay and may tend to score a hospital’s responsiveness lower.
+We analyzed the relationship between the results of patient experience surveys, specifically the Responsiveness of Hospital Staff score, and total cost per claim. Note that total cost was more appropriate in this setting than inpatient costs as was previously analyzed, because postoperative complications will occur in the inpatient setting but responsiveness of hospital staff occurs in both the inpatient and outpatient setting. 
+
+We used a linear least squares regression with a quadratic transformation on total spending per claim to model this relationship. We adjusted for other significant factors, including hospital ownership (e.g., "Government - Federal" and "Government - Local"), whether the hospital offers emergency services, whether the hospital meets the criteria for for meaningful use of EHRs, the number of hospitals per capita in the surrounding county, socioeconomic factors of the surrounding county including median income, population, and the percentage of residents without health insurance, region. Our initial analysis also considered whether the state is a "healthcare policy focused state" (i.e., Medicaid Expansion Instrumental Variable), but that term was not significant so it was excluded. As noted above, this term is likely not significant because Medicare is a federally run program which is not sensitive to state-level policy decisions. The results may be different if we were to run this analysis on a payer's data that varies by region, such as Medicaid, exchange, commercial, etc.
+
+The regression results for hospital staff responsiveness are:
+
+![Postoperative Regression Results](/images/regression_results_responsiveness.png)
+
+All else being equal, a hospital with an average total spend per claim of \$11,500 has a Responsiveness of Hospital Staff score 15.1% lower than a hospital that spends $2k per claim less. This makes intuitive sense because the fee-for-service payment scheme encourages a "quantity over quality" approach to care. Over-testing and providing more services than necessary yields a higher cost per claim, but does not increase patient satisfaction -- in fact, most patients don't enjoy being exposed to more tests/services than are necessary. This analysis, unlike the prior analysis, does not suffer from potential reverse causation, although it is possible that there are other confounding factors that have not been accounted for here.
+
+We noted that the effect size of hospital density was high. Hospital density has been defined as the number of hospitals in the county per 100,000 residents On average, a hospital in a county with a given hospital density per capita (100,000 residents) had a responsiveness score that was 0.93 points higher than a hospital in a county with one less hospital per capita (100,000 residents). This makes intuitive sense, because the more hospitals serving a population, the faster the service.
+
+There is also a large negative effect size for a hospital with emergency services vs no emergency services. On average, a hospital with emergency services had a responsiveness score that was 1.97 points lower than a hospital without emergency services. This is likely because of the long lines that result from emergency care. There are two contributing factors: 1) patients who seek non-emergency care may be deprioritized compared to emergency cases, and 2) patients who need emergency care are likely to be more disgruntled about any delay and may tend to score a hospital's responsiveness lower.
+
+The graphs below demonstrate the results of the fitted model. Generally speaking, there is a negative and quadratic effect between total spend per claim and the hospital responsiveness score. The regions do not look terribly different for this measure. However, when comparing hospitals with emergency services to those without, there is an evident difference between the two populations'  responsiveness scores as total spend increases. 
+
+![Responsiveness by Emergency Y/N](/images/responsiveness_emergency.png) 
+
+The positive correlation between hospital density and responsiveness is clear as well.
+
+![Responsiveness by Density](/images/responsiveness_density.png) 
+
+In Massachusetts specifically, the trend is clearly negative, with higher total spend per claim associated with lower hospital responsiveness scores. Similar to the observations above, we note that higher income counties have lower spend per claim, higher responsiveness, and lower percentage of the population without health insurance. Again, the outlier hospitals with low income, low total spend per claim, and high responsiveness scores are all very close to one another in Springfield, Massachusetts.
+
+![MA Responsiveness](/images/responsiveness_ma.png)
+
+
+## Conclusions and Next Steps
+
+The public CMS Medicare data is a very powerful data source that can be used to understand high level trends in Medicare spending and outcomes. We have identified a positive association between spend per claim and hospital complications, although note that this may be in part due to reverse causation. We have identified a negative association between spend per claim and hospital staff responsiveness score, which may indicate that patients are less satisfied with hospitals that emphasize quantity over quality.
+
+A large limitation of these datasets is that they do not contain data necessary to do more granular analysis, such as data stratified by procedure codes (e.g., DRGs, CPT-4s, etc.). This data is available for purchase from CMS. This would be an interesting extension to this project. Furthermore, it would be possible to extend this analysis to account for yearly variation in quality and costs. 
+
+
+
