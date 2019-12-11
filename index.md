@@ -2,9 +2,9 @@
 ### Rachel Ketchum, Genevieve Lyons, Franklin Yang
 
 ## Table of Contents
-1. [Background](##Background)
-2. [Purpose](##Purpose)
-3. [Data Collection and Cleaning Process](##Data Collection and Cleaning Process)
+1. [Background](#Background)
+2. [Purpose](#Purpose)
+3. [Data Collection and Cleaning Process](#Data Collection and Cleaning Process)
 
 
 ## Background 
