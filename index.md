@@ -75,7 +75,7 @@ The analyses to follow dig into the relationship between two outcome measures (P
 We analyzed the relationship between hospitals' postoperative complications in the inpatient setting, such as "Blood stream infection after surgery" and inpatient spending per claim. We used a linear least squares regression with a quadratic transformation on inpatient spending per claim to model this relationship. We adjusted for other significant factors, including hospital ownership (e.g., "Government - Federal" and "Government - Local"), whether the hospital offers emergency services, whether the hospital meets the criteria for for meaningful use of EHRs, the number of hospitals per capita in the surrounding county, socioeconomic factors of the surrounding county including median income, population, and the percentage of residents without health insurance, region, and whether the state is a "healthcare policy focused state" (i.e., Medicaid Expansion Instrumental Variable).
 
 The regression results for postoperative complications are:
-![Postoperative Regression Results](/images/regression_results_postoperative_complications.png)
+![Postoperative Regression Results](/images/regression_results_postoperative.png)
 
 All else being equal, a hospital in a state with a healthcare policy focus with an average IP spend per claim of \$11,500 has a postoperative complications score 14.5% higher than a hospital that spends $2k per claim less (14.2% in non-healthcare policy focused states).
 
@@ -100,7 +100,7 @@ We used a linear least squares regression with a quadratic transformation on tot
 
 The regression results for hospital staff responsiveness are:
 
-![Responsiveness Regression Results](/images/regression_results_responsiveness.png)
+![Responsiveness Regression Results](/images/regression_results_responsiveness_staff.png)
 
 All else being equal, a hospital with an average total spend per claim of \$11,500 has a Responsiveness of Hospital Staff score 15.1% lower than a hospital that spends $2k per claim less. This makes intuitive sense because the fee-for-service payment scheme encourages a "quantity over quality" approach to care. Over-testing and providing more services than necessary yields a higher cost per claim, but does not increase patient satisfaction -- in fact, most patients don't enjoy being exposed to more tests/services than are necessary. This analysis, unlike the prior analysis, does not suffer from potential reverse causation, although it is possible that there are other confounding factors that have not been accounted for here.
 
