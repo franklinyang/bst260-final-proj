@@ -112,16 +112,59 @@ master$income_cat <- as.factor(master$income_cat)
 master$meets_criteria_for_meaningful_use_of_ehrs <- as.factor(master$meets_criteria_for_meaningful_use_of_ehrs)
 ```
 
+As we began exploring the CMS data, we looked at several histograms and scatterplots of measurements that seemed interesting. We began by looking at spending, both total and inpatient spending. 
 
-
+Below is a histogram of Inpatient Spending per Claim:
 ```{r}
 summary(master$ip_spend); sd(na.omit(master$ip_spend)) #Median 11,482; sd 2,651.519
 hist(master$ip_spend)
-hist(log10(master$ip_spend))
-summary(master$hospital_level_complications_score); sd(na.omit(master$hospital_level_complications_score))
-
 ```
 
+We noticed that inpatient spending was skewed right, and tried a log base 10 transformation, which showed a more normal distribution:
+```{r}
+hist(log10(master$ip_spend))
+```
+
+
+We then looked at how inpatient spending might be related to hospital level complications. As there appeared to be a trend, this was something that we investigated as part of our final analysis. We also noticed that there was a potential difference in the ownership of each hospital, which is why it is included in our visualizations. 
+```{r}
+summary(master$hospital_level_complications_score); sd(na.omit(master$hospital_level_complications_score))
+master %>% ggplot(aes(ip_spend, hospital_level_complications_score))+
+  geom_point(aes(color = hospital_ownership))
+```
+
+We did think there overall trend was linear, but with a slight quadratic appearance of inpatient spending. When we began linear regression we tested both linear inpatient spending and both linear and quadratic inpatient spending and found that both were significant.
+```{r}
+mod_simple_linear_complications <- lm(hospital_level_complications_score ~
+                                        ip_spend,
+                                      data = master)
+mod_simple_quad_complications <- lm(hospital_level_complications_score ~
+                                      ip_spend +
+                                      I(ip_spend^2),
+                                    data = master)
+summary(mod_simple_linear_complications)
+summary(mod_simple_quad_complications)
+```
+
+
+We were particularly interested in what the situation might be in Massachusetts and found a remarkably linear trend in spending vs. complications which prompted further analysis. 
+```{r}
+master %>% filter(state == 'MA') %>% ggplot(aes(ip_spend, hospital_level_complications_score))+
+  geom_point(aes(color = hospital_ownership))
+```
+
+We were also interested in looking at excess hospital readmissions, because this has been an important news topic in reducing hospital spending. There was no clear relationship between total spending and excess readmissions, even after faceting by several other factors. Below is one example:
+```{r}
+master %>% ggplot(aes(total_spend, excess_readmissions))+
+  geom_point(aes(color = hospital_ownership))+
+  facet_wrap(.~region)
+```
+
+We did begin to think that we were missing valuable information and potential confounders and added the census data. Here we found that income was an important potential confounder. 
+```{r}
+master %>% ggplot()+
+  geom_histogram(aes(median_household_income))
+```
 
 
 What visualizations did you use to look at your data in different ways? What are the different statistical methods you considered? Justify the decisions you made, and show any major changes to your ideas. How did you reach these conclusions?
@@ -136,11 +179,11 @@ perhaps a few scatter plots
 
 We first analyzed the data at the state-level to identify high level trends in Medicare spending and outcomes. `app.R` contains a tool that will allow you to compare states. Using this tool, it is easy to dig into the relationship between  outcome measures and costs. 
 
-We note that, when examining postoperative complications by state, there are three outliers with high complications rates: North Dakota, Nebraska, and Colorado. When viewing the hospital staff responsiveness by state, there is a lot of state-level variation in the way patients are rating the staff responsiveness of a hospital. The trend isn’t so clear.
+We note that, when examining postoperative complications by state, there are three outliers with high complications rates: North Dakota, Nebraska, and Colorado. When viewing the hospital staff responsiveness by state, there is a lot of state-level variation in the way patients are rating the staff responsiveness of a hospital. The trend isn’t so clear for either.
 
 However, when viewing the data as presented on the second tab, we can compare hospital staff responsiveness compared to the total spend per claim, and we see a definite trend -- as fee-for-service spending increases, the patient experience suffers. There are similar results for the postoperative complications -- complications increase with spending.
 
-The analyses to follow dig into the relationship between two outcome measures (Postoperative Complications and Responsiveness of Hospital Staff) and Costs. For each outcome measure, we do regressions, confidence interval estimates, segment by covariates, and visualize.
+The analyses to follow dig into the relationship between two outcome measures (Postoperative Complications and Responsiveness of Hospital Staff) and Costs. For each outcome measure, we do regressions, estimate confidence intervals, segment by covariates, and visualize.
 
 ### Association between Postoperative Complications and Costs 
 
@@ -320,7 +363,7 @@ kable(confint(mod_responsiveness))
 
 All else being equal, a hospital with an average total spend per claim of \$11,500 has a Responsiveness of Hospital Staff score 15.1% lower than a hospital that spends $2k per claim less. This makes intuitive sense because the fee-for-service payment scheme encourages a "quantity over quality" approach to care. Over-testing and providing more services than necessary yields a higher cost per claim, but does not increase patient satisfaction -- in fact, most patients don't enjoy being exposed to more tests/services than are necessary. This analysis, unlike the prior analysis, does not suffer from potential reverse causation, although it is possible that there are other confounding factors that have not been accounted for here.
 
-We noted that the effect size of hospital density was high. Hospital density has been defined as the number of hospitals in the county per 100,000 residents On average, a hospital in a county with a given hospital density per capita (100,000 residents) had a responsiveness score that was 0.93 points higher than a hospital in a county with one less hospital per capita (100,000 residents). This makes intuitive sense, because the more hospitals serving a population, the faster the service.
+We noted that the effect size of hospital density was high. Hospital density has been defined as the number of hospitals in the county per 100,000 residents. On average, a hospital in a county with a given hospital density per capita (100,000 residents) had a responsiveness score that was 0.93 points higher than a hospital in a county with one less hospital per capita (100,000 residents). This makes intuitive sense, because the more hospitals serving a population, the faster the service.
 
 There is also a large negative effect size for a hospital with emergency services vs no emergency services. On average, a hospital with emergency services had a responsiveness score that was 1.97 points lower than a hospital without emergency services. This is likely because of the long lines that result from emergency care. There are two contributing factors: 1) patients who seek non-emergency care may be deprioritized compared to emergency cases, and 2) patients who need emergency care are likely to be more disgruntled about any delay and may tend to score a hospital's responsiveness lower.
 
