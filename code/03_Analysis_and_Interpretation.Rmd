@@ -112,7 +112,7 @@ master$income_cat <- as.factor(master$income_cat)
 master$meets_criteria_for_meaningful_use_of_ehrs <- as.factor(master$meets_criteria_for_meaningful_use_of_ehrs)
 ```
 
-As we began exploring the CMS data, we looked at several histograms and scatterplots of measurements that seemed interesting. We began by looking at spending, both total and inpatient spending. 
+As we began exploring the CMS data, we looked at several histograms and scatterplots of measurements that seemed interesting. We began by looking at inpatient and total spending. 
 
 Below is a histogram of Inpatient Spending per Claim:
 ```{r}
@@ -133,7 +133,7 @@ master %>% ggplot(aes(ip_spend, hospital_level_complications_score))+
   geom_point(aes(color = hospital_ownership))
 ```
 
-We did think there overall trend was linear, but with a slight quadratic appearance of inpatient spending. When we began linear regression we tested both linear inpatient spending and both linear and quadratic inpatient spending and found that both were significant.
+We did think the overall trend was linear, but with a slight quadratic appearance of inpatient spending. When we began linear regression we tested linear inpatient spending against both linear and quadratic inpatient spending and found that both were significant.
 ```{r}
 mod_simple_linear_complications <- lm(hospital_level_complications_score ~
                                         ip_spend,
@@ -157,21 +157,35 @@ We were also interested in looking at excess hospital readmissions, because this
 ```{r}
 master %>% ggplot(aes(total_spend, excess_readmissions))+
   geom_point(aes(color = hospital_ownership))+
-  facet_wrap(.~region)
+  facet_wrap(.~hc_policy_focused_state)
 ```
 
 We did begin to think that we were missing valuable information and potential confounders and added the census data. Here we found that income was an important potential confounder. 
 ```{r}
 master %>% ggplot()+
-  geom_histogram(aes(median_household_income))
+  geom_histogram(aes(median_household_income),color="black")
+mod_with_confounding <- lm(hospital_level_complications_score ~
+                                      ip_spend +
+                                      I(ip_spend^2)+
+                                      median_household_income,
+                                    data = master)
+summary(mod_with_confounding)
+```
+
+We used this process for examining other covariates of interest that might logically confound the relationship between our outcomes and main exposure. 
+
+Finally, we were also interested in examining whether or not a focus on healthcare policy affected spending per claim. We had originally added the IV to our regression before realizing that it's significance warranted further research. Using simple linear regression we found that our Instrumental Variable (Medicaid Expansion status in 2017) did not have a significant impact on inpatient or total spending. However, it was significant in our final analyses when looking at hospital complications. 
+```{r}
+mod_spending <- lm(total_spend ~ hc_policy_focused_state, data = master)
+summary(mod_spending)
+mod_ip_spending <- lm(ip_spend ~ hc_policy_focused_state, data = master)
+summary(mod_ip_spending)
+
 ```
 
 
-What visualizations did you use to look at your data in different ways? What are the different statistical methods you considered? Justify the decisions you made, and show any major changes to your ideas. How did you reach these conclusions?
-histogram of the cost variables; the outcome variables
-naive regressions (only one input)
-histogram of costs/outcomes stratifying by instrumental variable 
-perhaps a few scatter plots 
+
+
 
 ## Final Analysis
 
