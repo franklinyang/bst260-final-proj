@@ -13,7 +13,8 @@ Using Medicare as a paradigm, we have examined the relationship between spending
 
 ### File Structure and Results
 
-* The main results of our analysis, including the screencast, is available in our [website](https://franklinyang.github.io/bst260-final-proj/).
+The main results of our analysis, including the screencast, is available in our [website](https://franklinyang.github.io/bst260-final-proj/).
+
 * The `data` folder contains all raw data, which has been aggregated and analyzed from [CMS Hospital Compare Datasets](https://data.medicare.gov/data/hospital-compare) and the [US Census Bureau](https://www.census.gov/data.html).
 * The `images` folder contains images used in the website.
 * The `code` folder contains all code used to load, wrangle, and analyze the data. These files must be run sequentially:
